@@ -20,7 +20,7 @@ table{width:100%;border-collapse:collapse;margin:16px 0}th,td{border:1px solid v
 </head>
 <body>
 <header class="hero"><div class="wrap"><div class="eyebrow">Claude Code · Codex · Hermes Agent</div><h1>三大 Agent Prompt Library 技術文件</h1><p class="lead">這份文件合併三個 HTML Prompt Library，共 300 個可一鍵複製 Prompt，適合工程開發、文件生成、桌面代理、自動化、教材製作與科展資料整理。</p><div class="stats"><div class="stat"><strong>100</strong>Claude Code Prompts</div><div class="stat"><strong>100</strong>Codex Prompts</div><div class="stat"><strong>100</strong>Hermes Prompts</div></div></div></header>
-<div class="layout"><nav><strong>文件目錄</strong><a href="#guide">一、使用方式</a><a href="#compare">二、三者分工</a><a href="#library">三、搜尋與篩選</a><a href="#claude">四、Claude Code</a><a href="#codex">五、Codex</a><a href="#hermes">六、Hermes Agent</a><a href="#copy-all">七、一鍵複製範本</a></nav><main>
+<div class="layout"><nav><strong>文件目錄</strong><a href="#guide">一、使用方式</a><a href="#compare">二、三者分工</a><a href="#library">三、搜尋與篩選</a><a href="#claude">四、Claude Code</a><a href="#codex">五、Codex</a><a href="#hermes">六、Hermes Agent</a><a href="#copy-all">七、一鍵複製範本</a><a href="#essay">八、專文：從提示詞收藏到工作流設計</a></nav><main>
 <section id="guide"><h2>一、使用方式</h2><p>你可以直接用搜尋框找任務，例如「測試」、「GitHub Pages」、「AGENTS.md」、「Desktop」、「科展」。也可以用按鈕依 Agent 篩選。每張卡片都有複製按鈕，點下去即可複製該 prompt。</p><div class="note">建議用法：先用「理解/診斷」類 Prompt 盤點，再用「建置/修正」類 Prompt 執行，最後用「Review/驗證/文件」類 Prompt 收尾。</div></section>
 <section id="compare"><h2>二、三者分工</h2><table><thead><tr><th>Agent</th><th>最適合</th><th>使用提醒</th></tr></thead><tbody><tr><td>Claude Code</td><td>大型程式理解、規劃、重構、測試、Review、文件化。</td><td>適合把複雜任務拆解成清楚階段。</td></tr><tr><td>Codex</td><td>Repo 內讀寫程式、跑測試、修 bug、產出 PR、遵守 AGENTS.md。</td><td>任務要具體、可驗證、可 review。</td></tr><tr><td>Hermes Agent</td><td>CLI/Desktop/Gateway/Skills/Memory、自動化、長期工作流。</td><td>要先設定權限邊界，避免過度授權。</td></tr></tbody></table></section>
 <section id="library"><h2>三、搜尋與篩選</h2><div class="toolbar"><input id="search" class="search" type="search" placeholder="搜尋全部 300 個 Prompt：測試、部署、教材、memory、skill..."><button class="filter active" data-agent="all">全部</button><button class="filter" data-agent="claude">Claude Code</button><button class="filter" data-agent="codex">Codex</button><button class="filter" data-agent="hermes">Hermes</button></div></section>
@@ -1486,6 +1486,157 @@ Trace it to the likely root cause, explain why it happens, propose the smallest 
 5. 沒有驗證的部分
 6. 殘餘風險
 7. 建議下一步</pre></div></section>
+
+<section id="essay">
+<h2>八、專文：從提示詞收藏到工作流設計</h2>
+<h3>三大 AI Agent Prompt Library：從提示詞收藏到工作流設計</h3>
+<p>這次整理的三份 Prompt Library，分別以 Claude Code、Codex 與 Hermes Agent 為核心，合計 300 個實用提示詞。表面上看，它們是一組可以直接複製使用的 Prompt；但真正重要的，其實不是「有多少句提示詞」，而是背後代表的工作方式：如何把 AI Agent 從聊天工具，變成能理解任務、執行流程、驗證結果、產出文件，甚至逐步沉澱成個人工作系統的協作夥伴。</p>
+<p>Claude Code、Codex 與 Hermes Agent 雖然都可以協助處理程式、文件與工作流，但它們適合的使用情境並不完全相同。Claude Code 比較適合大型程式碼理解、規劃、重構、測試、Review 與技術文件化；Codex 適合在 repo 中讀寫程式、跑測試、修 bug、遵守 AGENTS.md、產出 PR 與工程文件；Hermes Agent 則更偏向長期工作流、自動化、Desktop、CLI、Gateway、Skills、Memory 與跨平台任務。</p>
+<p>因此，使用這些 Agent 的關鍵，不是把同一句 Prompt 貼給所有工具，而是根據任務性質選擇合適的 Agent，並給出正確的任務邊界。</p>
+
+<h3>一、Claude Code：適合複雜理解與工程協作</h3>
+<p>Claude Code 的強項在於理解大型脈絡、拆解問題、規劃步驟與協助長任務。當一個專案結構複雜、檔案很多、需要先理解架構再下手時，Claude Code 很適合擔任「資深工程協作者」的角色。</p>
+<p>適合 Claude Code 的 Prompt 通常會包含：</p>
+<ol>
+<li>請先理解，不要立刻修改。</li>
+<li>請列出可能會修改的檔案。</li>
+<li>請提出計畫，等我確認後再執行。</li>
+<li>請依照既有專案風格，不要新增不必要抽象。</li>
+<li>請執行測試，並回報驗證結果。</li>
+<li>請用 code review 角度檢查風險。</li>
+<li>請整理成 HTML 技術文件或 README。</li>
+</ol>
+<p>例如，當我們要請 Claude Code 接手一個陌生 repo，可以這樣下指令：</p>
+<div class="codebox"><pre>請先不要修改檔案。請完整掃描這個 repo，整理專案用途、技術架構、主要資料夾、入口檔案、啟動方式、測試方式與部署方式。最後請列出你建議我先閱讀的檔案，以及後續如果要修改功能，可能需要注意的風險。</pre></div>
+<p>這類 Prompt 的重點，是讓 Agent 先建立「地圖」，而不是一開始就衝進去改程式。</p>
+
+<h3>二、Codex：適合具體、可驗證的工程任務</h3>
+<p>Codex 的定位更接近「可以在程式碼倉庫裡工作的工程代理」。它適合處理具體、可驗證、可 review 的任務，例如修 bug、補測試、整理 AGENTS.md、產生 PR 說明、檢查 GitHub Pages 部署問題、建立 CLI 工具、撰寫技術文件等。</p>
+<p>Codex Prompt 的關鍵，是任務要明確，驗證方式要清楚。</p>
+<p>適合 Codex 的 Prompt 通常會包含：</p>
+<ol>
+<li>任務目標是什麼。</li>
+<li>可以修改哪些範圍。</li>
+<li>不可以做什麼。</li>
+<li>要跑哪些測試。</li>
+<li>如果測試不能跑，要說明原因。</li>
+<li>完成後要列出修改檔案與驗證證據。</li>
+<li>不要自行 commit，除非明確要求。</li>
+</ol>
+<p>例如：</p>
+<div class="codebox"><pre>請用最小改動修復這個 bug：[貼上 bug 描述]。請先找出相關檔案與根本原因，再提出修正計畫。修正時不要新增依賴、不要重構無關檔案。完成後請執行最小相關測試，並列出修改檔案、測試結果與仍未驗證的風險。</pre></div>
+<p>這樣的 Prompt 可以避免 Codex 把小問題改成大改版，也能讓結果更容易檢查。</p>
+
+<h3>三、Hermes Agent：適合長期記憶、自動化與跨工具工作流</h3>
+<p>Hermes Agent 的特色不是單純寫程式，而是比較像一個可以長期運作、記住流程、使用 Skills、連接 Gateway、透過 Desktop 或 CLI 操作的工作型 Agent。它適合處理安裝排錯、CLI/桌面版設定、Skills 管理、Memory 整理、Gateway 自動化、排程任務、訊息摘要、教育工作流與長期專案助理。</p>
+<p>Hermes Prompt 的重點，是要先設定權限邊界。</p>
+<p>適合 Hermes 的 Prompt 通常會包含：</p>
+<ol>
+<li>先確認工作目錄。</li>
+<li>不要讀取無關資料夾。</li>
+<li>不要顯示完整 API key 或 token。</li>
+<li>不要刪除、覆寫、寄出、發布或付款，除非明確確認。</li>
+<li>對外部平台先讀取與草稿，不直接送出。</li>
+<li>每次修改後列出檔案、命令、驗證結果與未驗證風險。</li>
+<li>若需要更高權限，先說明原因與替代方案。</li>
+</ol>
+<p>例如：</p>
+<div class="codebox"><pre>請先確認目前 Hermes 的工作目錄、可用工具、已載入 Skills、Memory 狀態與 provider 設定。這次任務只允許讀取目前專案資料夾，不允許刪除、覆寫、寄出訊息或修改外部平台資料。若需要更高權限，請先停下來說明原因，等我確認後再繼續。</pre></div>
+<p>這類 Prompt 很適合用在 Hermes Desktop、CLI、Gateway 或長期背景任務中。</p>
+
+<h3>四、Prompt 的真正價值：不是句子，而是流程</h3>
+<p>這三份 Prompt Library 最值得學的地方，不是把 300 句提示詞全部背起來，而是學會怎麼設計「可執行的任務流程」。</p>
+<p>好的 Prompt 通常有以下結構：</p>
+<ol>
+<li>任務目標：我要完成什麼？</li>
+<li>任務背景：為什麼要做？</li>
+<li>可用資料：請讀哪些檔案或參考哪些內容？</li>
+<li>邊界限制：哪些不能改？哪些不能碰？</li>
+<li>執行步驟：先理解、再計畫、再修改。</li>
+<li>驗證方式：要跑哪些測試或做哪些檢查？</li>
+<li>輸出格式：請用摘要、表格、HTML、PR 說明或技術文件。</li>
+<li>完成證據：請列出修改檔案、執行命令與結果。</li>
+<li>風險回報：哪些地方還沒有驗證？</li>
+<li>沉澱方式：是否要寫入 AGENTS.md、Skill、Memory 或 SOP？</li>
+</ol>
+<p>這樣的 Prompt，不只是「叫 AI 做事」，而是在設計一個可以被重複執行、可以被檢查、可以被改進的工作流。</p>
+
+<h3>五、三者的分工建議</h3>
+<p>如果任務是「看懂大型專案、規劃重構、產生技術文件」，可以優先使用 Claude Code。</p>
+<p>如果任務是「修 bug、補測試、跑 build、整理 PR、遵守 AGENTS.md」，可以優先使用 Codex。</p>
+<p>如果任務是「安裝排錯、桌面版操作、長期記憶、自動化、Gateway、Skills、排程任務」，可以優先使用 Hermes Agent。</p>
+<p>如果任務和教學有關，例如自然科教材、科展資料、研習講義、互動教材網站、HTML 技術文件，三者都可以使用，但分工可以是：</p>
+<p>Claude Code：負責架構規劃與內容整理。<br>Codex：負責實作 HTML、修正網站、處理 repo。<br>Hermes Agent：負責長期記憶、例行任務、文件歸檔與自動化提醒。</p>
+
+<h3>六、最推薦的通用 Prompt 範本</h3>
+<p>以下是一個可以給大多數 AI Agent 使用的通用 Prompt：</p>
+<div class="codebox"><pre>請先理解任務與相關檔案，再提出計畫。不要直接大幅修改。
+
+任務目標：[填入目標]
+背景脈絡：[填入背景]
+可使用資料：[列出檔案、連結或資料夾]
+限制條件：[不可修改、不可刪除、不可新增依賴、不可連網等]
+驗證方式：[test、lint、build、manual QA、截圖檢查等]
+輸出格式：[摘要、表格、HTML、PR 說明、技術文件等]
+
+請依照以下流程：
+1. 先理解現況。
+2. 列出你會查看或修改的檔案。
+3. 提出計畫。
+4. 等我確認後再實作。
+5. 實作後執行驗證。
+6. 回報修改內容、驗證結果與殘餘風險。
+
+如果需要更高權限或更大範圍修改，請先停下來問我。</pre></div>
+
+<h3>七、完成前一定要要求的證據</h3>
+<p>無論使用 Claude Code、Codex 或 Hermes Agent，都建議在 Prompt 裡加上這段：</p>
+<div class="codebox"><pre>在你說完成前，請列出：
+
+1. 修改了哪些檔案。
+2. 為什麼修改。
+3. 執行了哪些命令。
+4. 測試或驗證結果。
+5. 沒有驗證的部分。
+6. 殘餘風險。
+7. 建議下一步。
+
+如果沒有實際驗證，請明確說「尚未驗證」，不要只說完成。</pre></div>
+
+<h3>八、從 Prompt Library 走向個人工作系統</h3>
+<p>當一個 Prompt 用過三次以上，就不應該只留在聊天紀錄裡。它可以被整理成：</p>
+<ol>
+<li>AGENTS.md：給 Codex 或 coding agent 的專案規則。</li>
+<li>Skill：給 Claude Code 或 Hermes 使用的可重複流程。</li>
+<li>SOP：給自己或團隊看的操作手冊。</li>
+<li>HTML 技術文件：方便分享、教學、研習使用。</li>
+<li>Memory：讓長期 Agent 記住偏好與專案脈絡。</li>
+<li>Automation：變成定期提醒、每日摘要、週報或監控任務。</li>
+</ol>
+<p>這也是這三份 Prompt Library 最重要的延伸價值：它們不只是提示詞集合，而是建立 AI 工作流的材料庫。</p>
+
+<h3>九、給教師與教材開發者的應用</h3>
+<p>對自然科教師來說，這三種 Agent 可以用在非常多場景：</p>
+<ol>
+<li>產生自然科互動教材。</li>
+<li>整理科展資料。</li>
+<li>製作 HTML 技術文件。</li>
+<li>撰寫研習講義。</li>
+<li>設計學習單與 Rubric。</li>
+<li>檢查試題是否重複或超綱。</li>
+<li>協助 GitHub Pages 教材網站維護。</li>
+<li>產生教案與 108 課綱對應。</li>
+<li>整理活動成果報告。</li>
+<li>建立個人 AI 教學工作流。</li>
+</ol>
+<p>如果把這些任務都變成可重複 Prompt、Skill 或 SOP，AI 就不只是臨時幫忙，而會逐漸變成教師的工作系統。</p>
+
+<h3>十、結語</h3>
+<p>Claude Code、Codex 與 Hermes Agent 代表了 AI Agent 使用方式的三個方向：理解與協作、工程執行、長期自動化。</p>
+<p>真正成熟的使用方式，不是每次都重新問 AI，也不是收藏越多 Prompt 越好，而是把好用的 Prompt 逐步沉澱成工作流，把工作流變成 Skill、AGENTS.md、SOP、Memory 與 Automation。</p>
+<p>Prompt 是起點，工作流才是核心。</p>
+<p>當我們能清楚描述目標、設定邊界、要求驗證、保存證據、沉澱流程，AI Agent 才會從「會聊天的工具」，變成真正能一起完成工作的夥伴。</p>
+</section>
 </main></div>
 <script>
 const search=document.getElementById('search');const cards=[...document.querySelectorAll('.prompt-card')];const filters=[...document.querySelectorAll('.filter')];let active='all';
