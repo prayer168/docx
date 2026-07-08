@@ -1,0 +1,1498 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>三大 Agent Prompt Library 技術文件</title>
+<style>
+:root{--bg:#f6f7f9;--paper:#fff;--ink:#172033;--muted:#647084;--line:#dce2ea;--brand:#2563eb;--soft:#eaf2ff;--code:#111827;--codeInk:#eef2ff;--radius:8px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.7}
+.hero{background:linear-gradient(135deg,#0f172a,#1e3a8a 58%,#2563eb);color:white;padding:58px 20px}.wrap{max-width:1200px;margin:0 auto}.eyebrow{font-size:14px;color:#dbeafe;margin-bottom:14px}h1{font-size:clamp(32px,5vw,54px);line-height:1.2;margin:0}.lead{max-width:860px;color:#e5edff;font-size:18px;margin:16px 0 0}
+.layout{max-width:1200px;margin:0 auto;padding:28px 20px 56px;display:grid;grid-template-columns:260px minmax(0,1fr);gap:24px;align-items:start}nav{position:sticky;top:16px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:0 10px 24px rgba(17,24,39,.08)}nav strong,nav a{display:block}nav strong{margin-bottom:10px}nav a{padding:7px 4px;color:var(--muted);text-decoration:none;font-size:14px}
+section{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:26px;margin-bottom:18px;box-shadow:0 10px 24px rgba(17,24,39,.08)}h2{font-size:28px;line-height:1.25;margin:0 0 18px;padding-bottom:12px;border-bottom:1px solid var(--line)}h3{font-size:19px;margin:20px 0 10px}.note{background:var(--soft);border-left:4px solid var(--brand);border-radius:6px;padding:14px 16px;color:#1e3a8a}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}.stat{border:1px solid rgba(255,255,255,.28);border-radius:8px;padding:14px;background:rgba(255,255,255,.1)}.stat strong{display:block;font-size:26px}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}.search{flex:1 1 280px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);font:inherit}.filter{border:1px solid var(--line);border-radius:999px;padding:8px 12px;background:white;color:var(--muted);cursor:pointer;font:inherit;font-size:14px}.filter.active{background:var(--brand);border-color:var(--brand);color:white}
+.prompt-list{display:grid;grid-template-columns:1fr;gap:12px}.prompt-card{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:white}.prompt-head{padding:14px;border-bottom:1px solid var(--line)}.agent-label{display:inline-block;background:#111827;color:white;border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700;margin:0 8px 8px 0}.tag{display:inline-block;background:#dbeafe;color:#1d4ed8;border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700;margin-bottom:8px}.prompt-head h3{margin:0 0 6px}.prompt-head p{margin:0;color:var(--muted);font-size:14px}
+.codebox{position:relative;background:var(--code);color:var(--codeInk);padding:14px}.copy{position:absolute;top:10px;right:10px;border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.08);color:white;border-radius:6px;padding:4px 9px;cursor:pointer;font-size:12px}pre{margin:0;white-space:pre-wrap;word-break:break-word;font-family:"Cascadia Code","JetBrains Mono",Consolas,monospace;font-size:13px;line-height:1.6}.why{padding:12px 14px;background:#fbfdff;color:var(--muted);font-size:14px}
+table{width:100%;border-collapse:collapse;margin:16px 0}th,td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}th{background:#f1f5f9}a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}.hidden{display:none!important}
+@media(max-width:900px){.layout{grid-template-columns:1fr}nav{position:static}section{padding:21px}.stats{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="hero"><div class="wrap"><div class="eyebrow">Claude Code · Codex · Hermes Agent</div><h1>三大 Agent Prompt Library 技術文件</h1><p class="lead">這份文件合併三個 HTML Prompt Library，共 300 個可一鍵複製 Prompt，適合工程開發、文件生成、桌面代理、自動化、教材製作與科展資料整理。</p><div class="stats"><div class="stat"><strong>100</strong>Claude Code Prompts</div><div class="stat"><strong>100</strong>Codex Prompts</div><div class="stat"><strong>100</strong>Hermes Prompts</div></div></div></header>
+<div class="layout"><nav><strong>文件目錄</strong><a href="#guide">一、使用方式</a><a href="#compare">二、三者分工</a><a href="#library">三、搜尋與篩選</a><a href="#claude">四、Claude Code</a><a href="#codex">五、Codex</a><a href="#hermes">六、Hermes Agent</a><a href="#copy-all">七、一鍵複製範本</a></nav><main>
+<section id="guide"><h2>一、使用方式</h2><p>你可以直接用搜尋框找任務，例如「測試」、「GitHub Pages」、「AGENTS.md」、「Desktop」、「科展」。也可以用按鈕依 Agent 篩選。每張卡片都有複製按鈕，點下去即可複製該 prompt。</p><div class="note">建議用法：先用「理解/診斷」類 Prompt 盤點，再用「建置/修正」類 Prompt 執行，最後用「Review/驗證/文件」類 Prompt 收尾。</div></section>
+<section id="compare"><h2>二、三者分工</h2><table><thead><tr><th>Agent</th><th>最適合</th><th>使用提醒</th></tr></thead><tbody><tr><td>Claude Code</td><td>大型程式理解、規劃、重構、測試、Review、文件化。</td><td>適合把複雜任務拆解成清楚階段。</td></tr><tr><td>Codex</td><td>Repo 內讀寫程式、跑測試、修 bug、產出 PR、遵守 AGENTS.md。</td><td>任務要具體、可驗證、可 review。</td></tr><tr><td>Hermes Agent</td><td>CLI/Desktop/Gateway/Skills/Memory、自動化、長期工作流。</td><td>要先設定權限邊界，避免過度授權。</td></tr></tbody></table></section>
+<section id="library"><h2>三、搜尋與篩選</h2><div class="toolbar"><input id="search" class="search" type="search" placeholder="搜尋全部 300 個 Prompt：測試、部署、教材、memory、skill..."><button class="filter active" data-agent="all">全部</button><button class="filter" data-agent="claude">Claude Code</button><button class="filter" data-agent="codex">Codex</button><button class="filter" data-agent="hermes">Hermes</button></div></section>
+<section id="claude" class="agent-section">
+<h2>Claude Code：100 個 Prompt</h2>
+<p>適合大型程式碼理解、重構、測試、Review、文件化與前端檢查。</p>
+<div class="prompt-list">
+<article class="prompt-card" data-agent="claude" data-cat="understand" data-search="1. 快速理解新專案 第一次接手 repo 時 give me an overview of this codebase: architecture, key directories, entry points, data flow, and how the pieces connect. do not edit files yet. 先建立地圖，避免還沒看懂就開始亂改。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">理解</span>
+              <h3>1. 快速理解新專案</h3>
+              <p>第一次接手 repo 時</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-001">複製</button>
+              <pre id="claude-001">give me an overview of this codebase: architecture, key directories, entry points, data flow, and how the pieces connect. Do not edit files yet.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>先建立地圖，避免還沒看懂就開始亂改。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="understand" data-search="2. 找出特定邏輯位置 知道有功能，但不知道在哪裡 where do we validate uploaded file types in this codebase? show candidate files, explain which one is the source of truth, and do not edit yet. 要求列出候選與判斷，降低找錯檔案的風險。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">理解</span>
+              <h3>2. 找出特定邏輯位置</h3>
+              <p>知道有功能，但不知道在哪裡</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-002">複製</button>
+              <pre id="claude-002">where do we validate uploaded file types in this codebase? Show candidate files, explain which one is the source of truth, and do not edit yet.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>要求列出候選與判斷，降低找錯檔案的風險。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="understand" data-search="3. 解釋一段流程 要修改前先理解 walk me through how the payment retry logic works. include entry points, decision branches, edge cases, and related tests. 要求控制流、邊界與測試，理解會更完整。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">理解</span>
+              <h3>3. 解釋一段流程</h3>
+              <p>要修改前先理解</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-003">複製</button>
+              <pre id="claude-003">walk me through how the payment retry logic works. Include entry points, decision branches, edge cases, and related tests.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>要求控制流、邊界與測試，理解會更完整。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="understand" data-search="4. 讀取專案慣例 開始長期協作前 inspect this repo and summarize its coding conventions, test commands, build commands, folder structure, and naming patterns. suggest what should go into claude.md. 把隱性慣例顯性化，讓後續任務更穩。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">理解</span>
+              <h3>4. 讀取專案慣例</h3>
+              <p>開始長期協作前</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-004">複製</button>
+              <pre id="claude-004">inspect this repo and summarize its coding conventions, test commands, build commands, folder structure, and naming patterns. Suggest what should go into CLAUDE.md.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>把隱性慣例顯性化，讓後續任務更穩。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="understand" data-search="5. 找出資料流 前後端或資料庫邏輯複雜時 trace the data flow for [feature name] from ui input to storage and back to display. list files in order and explain each responsibility. 用順序理解系統，比只看單檔更清楚。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">理解</span>
+              <h3>5. 找出資料流</h3>
+              <p>前後端或資料庫邏輯複雜時</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-005">複製</button>
+              <pre id="claude-005">trace the data flow for [feature name] from UI input to storage and back to display. List files in order and explain each responsibility.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>用順序理解系統，比只看單檔更清楚。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="understand" data-search="6. 梳理依賴關係 重構前 map the dependencies around [module]. identify direct callers, downstream effects, and risky coupling. do not modify files. 先看影響範圍，再決定怎麼改。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">理解</span>
+              <h3>6. 梳理依賴關係</h3>
+              <p>重構前</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-006">複製</button>
+              <pre id="claude-006">map the dependencies around [module]. Identify direct callers, downstream effects, and risky coupling. Do not modify files.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>先看影響範圍，再決定怎麼改。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="understand" data-search="7. 產生 onboarding 導覽 給新成員讀 create an onboarding guide for this repository: what to read first, how to run it locally, common commands, and common traps. output as markdown. 讓一次理解變成團隊文件。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">理解</span>
+              <h3>7. 產生 onboarding 導覽</h3>
+              <p>給新成員讀</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-007">複製</button>
+              <pre id="claude-007">create an onboarding guide for this repository: what to read first, how to run it locally, common commands, and common traps. Output as Markdown.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>讓一次理解變成團隊文件。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="build" data-search="8. 新增功能並驗證 中小型功能 add [feature] to the app. follow existing patterns, update relevant tests, run the smallest relevant test command, and summarize changed files. 把實作、測試、回報放在同一輪。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">建置</span>
+              <h3>8. 新增功能並驗證</h3>
+              <p>中小型功能</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-008">複製</button>
+              <pre id="claude-008">add [feature] to the app. Follow existing patterns, update relevant tests, run the smallest relevant test command, and summarize changed files.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>把實作、測試、回報放在同一輪。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="build" data-search="9. 依照既有頁面新增頁面 前端頁面一致性 add a settings page that follows the same layout, spacing, and component patterns as the profile page. keep copy concise and verify mobile layout. 指定參考物，避免 agent 自創風格。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">建置</span>
+              <h3>9. 依照既有頁面新增頁面</h3>
+              <p>前端頁面一致性</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-009">複製</button>
+              <pre id="claude-009">add a settings page that follows the same layout, spacing, and component patterns as the profile page. Keep copy concise and verify mobile layout.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>指定參考物，避免 Agent 自創風格。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="build" data-search="10. 建立 api endpoint 新增後端功能 create an api endpoint for [task]. match existing route conventions, validation style, error format, and tests. do not introduce a new framework. 明確要求沿用本地架構。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">建置</span>
+              <h3>10. 建立 API endpoint</h3>
+              <p>新增後端功能</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-010">複製</button>
+              <pre id="claude-010">create an API endpoint for [task]. Match existing route conventions, validation style, error format, and tests. Do not introduce a new framework.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>明確要求沿用本地架構。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="build" data-search="11. 補上表單驗證 表單邏輯不足 add validation for [form]. use the existing validation library and error display pattern. include tests for invalid, valid, and boundary inputs. 驗證不只寫 happy path。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">建置</span>
+              <h3>11. 補上表單驗證</h3>
+              <p>表單邏輯不足</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-011">複製</button>
+              <pre id="claude-011">add validation for [form]. Use the existing validation library and error display pattern. Include tests for invalid, valid, and boundary inputs.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>驗證不只寫 happy path。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="build" data-search="12. 新增資料模型 資料庫功能 add the data model for [entity], create the migration, run it against the dev database if available, and confirm the schema matches the model. 資料庫任務要包含 migration 與 schema 確認。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">建置</span>
+              <h3>12. 新增資料模型</h3>
+              <p>資料庫功能</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-012">複製</button>
+              <pre id="claude-012">add the data model for [entity], create the migration, run it against the dev database if available, and confirm the schema matches the model.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>資料庫任務要包含 migration 與 schema 確認。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="build" data-search="13. 原型開發 想先看可行性 prototype [idea] with minimal changes. keep it isolated, list assumptions, and tell me what would need hardening before production. 把 prototype 跟 production 明確分開。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">建置</span>
+              <h3>13. 原型開發</h3>
+              <p>想先看可行性</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-013">複製</button>
+              <pre id="claude-013">prototype [idea] with minimal changes. Keep it isolated, list assumptions, and tell me what would need hardening before production.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>把 prototype 跟 production 明確分開。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="build" data-search="14. 加上權限控管 功能需要角色限制 add role-based access control for [feature]. follow existing auth patterns, include unauthorized and forbidden test cases, and document behavior. 權限功能最怕只測成功情境。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">建置</span>
+              <h3>14. 加上權限控管</h3>
+              <p>功能需要角色限制</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-014">複製</button>
+              <pre id="claude-014">add role-based access control for [feature]. Follow existing auth patterns, include unauthorized and forbidden test cases, and document behavior.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>權限功能最怕只測成功情境。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="build" data-search="15. 優化行動版 rwd 跑版 inspect the responsive layout for [page/component]. fix overlap, clipping, and layout shift on mobile and desktop. explain the css changes. 指定常見版面問題，輸出更精準。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">建置</span>
+              <h3>15. 優化行動版</h3>
+              <p>RWD 跑版</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-015">複製</button>
+              <pre id="claude-015">inspect the responsive layout for [page/component]. Fix overlap, clipping, and layout shift on mobile and desktop. Explain the CSS changes.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>指定常見版面問題，輸出更精準。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="test" data-search="16. 修復失敗測試 測試紅燈 the tests in [test file] are failing. find the root cause, fix the implementation or test as appropriate, rerun the tests, and explain the fix. 要求判斷是程式錯還是測試錯。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">測試</span>
+              <h3>16. 修復失敗測試</h3>
+              <p>測試紅燈</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-016">複製</button>
+              <pre id="claude-016">the tests in [test file] are failing. Find the root cause, fix the implementation or test as appropriate, rerun the tests, and explain the fix.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>要求判斷是程式錯還是測試錯。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="test" data-search="17. 為既有檔案補測試 提高覆蓋率 write tests for @[file]. cover normal cases, edge cases, and failure cases. match the style of existing tests in [test directory], then run them. 參考既有測試風格，避免產生異質測試。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">測試</span>
+              <h3>17. 為既有檔案補測試</h3>
+              <p>提高覆蓋率</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-017">複製</button>
+              <pre id="claude-017">write tests for @[file]. Cover normal cases, edge cases, and failure cases. Match the style of existing tests in [test directory], then run them.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>參考既有測試風格，避免產生異質測試。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="test" data-search="18. 找出測試缺口 發版前 review the changes in git diff and identify missing test coverage. suggest the smallest useful tests before writing any code. 先審測試缺口，再決定要不要寫。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">測試</span>
+              <h3>18. 找出測試缺口</h3>
+              <p>發版前</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-018">複製</button>
+              <pre id="claude-018">review the changes in git diff and identify missing test coverage. Suggest the smallest useful tests before writing any code.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>先審測試缺口，再決定要不要寫。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="test" data-search="19. 建立整合測試 跨模組流程 add integration tests for [workflow]. use the project’s existing integration test setup and avoid mocking the core behavior under test. 整合測試要避免把真正該測的東西 mock 掉。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">測試</span>
+              <h3>19. 建立整合測試</h3>
+              <p>跨模組流程</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-019">複製</button>
+              <pre id="claude-019">add integration tests for [workflow]. Use the project’s existing integration test setup and avoid mocking the core behavior under test.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>整合測試要避免把真正該測的東西 mock 掉。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="test" data-search="20. 建立回歸測試 修 bug 後 before fixing the bug, add a regression test that fails on the current behavior. then fix the bug and rerun the test to confirm it passes. 先紅後綠，確保真的抓住 bug。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">測試</span>
+              <h3>20. 建立回歸測試</h3>
+              <p>修 bug 後</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-020">複製</button>
+              <pre id="claude-020">before fixing the bug, add a regression test that fails on the current behavior. Then fix the bug and rerun the test to confirm it passes.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>先紅後綠，確保真的抓住 bug。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="test" data-search="21. 測試命令盤點 不熟專案時 find the available test, lint, typecheck, and build commands in this repo. explain when to run each and suggest a minimal verification sequence. 先知道怎麼驗證，才開始改。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">測試</span>
+              <h3>21. 測試命令盤點</h3>
+              <p>不熟專案時</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-021">複製</button>
+              <pre id="claude-021">find the available test, lint, typecheck, and build commands in this repo. Explain when to run each and suggest a minimal verification sequence.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>先知道怎麼驗證，才開始改。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="test" data-search="22. 效能目標驗證 效能任務 improve [performance target] and get it under [threshold]. measure before and after, show what changed, and avoid unrelated refactors. 效能任務需要前後數據。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">測試</span>
+              <h3>22. 效能目標驗證</h3>
+              <p>效能任務</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-022">複製</button>
+              <pre id="claude-022">improve [performance target] and get it under [threshold]. Measure before and after, show what changed, and avoid unrelated refactors.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>效能任務需要前後數據。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="review" data-search="23. commit 前審查 提交前自檢 review my uncommitted changes and flag anything risky before i commit. focus on bugs, regressions, missing tests, and unintended behavior changes. 讓 agent 用 code review 視角，而不是摘要視角。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Review</span>
+              <h3>23. Commit 前審查</h3>
+              <p>提交前自檢</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-023">複製</button>
+              <pre id="claude-023">review my uncommitted changes and flag anything risky before I commit. Focus on bugs, regressions, missing tests, and unintended behavior changes.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>讓 Agent 用 code review 視角，而不是摘要視角。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="review" data-search="24. pr 風險審查 審 pull request review this pr for correctness, security, performance, and missing tests. lead with findings ordered by severity and include file references. 設定 review 格式，避免只給鼓勵。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Review</span>
+              <h3>24. PR 風險審查</h3>
+              <p>審 Pull Request</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-024">複製</button>
+              <pre id="claude-024">review this PR for correctness, security, performance, and missing tests. Lead with findings ordered by severity and include file references.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>設定 review 格式，避免只給鼓勵。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="review" data-search="25. 安全審查 登入、檔案、api、金流 review the changed files for security risks: auth bypass, injection, sensitive data exposure, unsafe file handling, and permission mistakes. 安全審查要指定威脅類型。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Review</span>
+              <h3>25. 安全審查</h3>
+              <p>登入、檔案、API、金流</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-025">複製</button>
+              <pre id="claude-025">review the changed files for security risks: auth bypass, injection, sensitive data exposure, unsafe file handling, and permission mistakes.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>安全審查要指定威脅類型。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="review" data-search="26. 可維護性審查 大改後 review this implementation for maintainability. identify duplicated logic, unclear boundaries, over-abstraction, and places that violate local patterns. 把主觀可讀性轉成具體檢查項。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Review</span>
+              <h3>26. 可維護性審查</h3>
+              <p>大改後</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-026">複製</button>
+              <pre id="claude-026">review this implementation for maintainability. Identify duplicated logic, unclear boundaries, over-abstraction, and places that violate local patterns.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>把主觀可讀性轉成具體檢查項。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="review" data-search="27. ui 審查 前端頁面 review the ui changes for accessibility, responsive behavior, keyboard navigation, contrast, text overflow, and empty/loading/error states. ui review 要包含狀態與可及性。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Review</span>
+              <h3>27. UI 審查</h3>
+              <p>前端頁面</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-027">複製</button>
+              <pre id="claude-027">review the UI changes for accessibility, responsive behavior, keyboard navigation, contrast, text overflow, and empty/loading/error states.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>UI review 要包含狀態與可及性。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="review" data-search="28. 發版審查 release 前 review git diff since the last release tag. summarize user-facing changes, migration risks, rollback concerns, and tests that should pass before release. 發版關注的不只是程式碼，也包含回滾與遷移。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Review</span>
+              <h3>28. 發版審查</h3>
+              <p>release 前</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-028">複製</button>
+              <pre id="claude-028">review git diff since the last release tag. Summarize user-facing changes, migration risks, rollback concerns, and tests that should pass before release.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>發版關注的不只是程式碼，也包含回滾與遷移。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="review" data-search="29. 第三方套件審查 加新 dependency 前 evaluate whether we should add [package]. check current alternatives in the repo, maintenance risk, bundle impact, and whether native code is enough. 避免為小問題引入大依賴。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Review</span>
+              <h3>29. 第三方套件審查</h3>
+              <p>加新 dependency 前</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-029">複製</button>
+              <pre id="claude-029">evaluate whether we should add [package]. Check current alternatives in the repo, maintenance risk, bundle impact, and whether native code is enough.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>避免為小問題引入大依賴。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="debug" data-search="30. 錯誤訊息診斷 有 stack trace getting this error:
+[paste error]
+trace it to the likely root cause, explain why it happens, propose the smallest fix, and say how to verify it. 貼原始錯誤比轉述更有用。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Debug</span>
+              <h3>30. 錯誤訊息診斷</h3>
+              <p>有 stack trace</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-030">複製</button>
+              <pre id="claude-030">getting this error:
+[paste error]
+Trace it to the likely root cause, explain why it happens, propose the smallest fix, and say how to verify it.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>貼原始錯誤比轉述更有用。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="debug" data-search="31. build 失敗 ci 或本機 build 掛掉 why is the build failing? @build.log read the log, identify the first meaningful failure, fix it if safe, and rerun the relevant command. 要求找第一個有效錯誤，避免被連鎖錯誤帶偏。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Debug</span>
+              <h3>31. Build 失敗</h3>
+              <p>CI 或本機 build 掛掉</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-031">複製</button>
+              <pre id="claude-031">why is the build failing? @build.log Read the log, identify the first meaningful failure, fix it if safe, and rerun the relevant command.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>要求找第一個有效錯誤，避免被連鎖錯誤帶偏。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="debug" data-search="32. 只在 production 發生 環境差異問題 this only fails in production. compare config, environment variables, build mode, data assumptions, and error handling. do not guess; list evidence. production-only 問題最怕憑感覺猜。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Debug</span>
+              <h3>32. 只在 production 發生</h3>
+              <p>環境差異問題</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-032">複製</button>
+              <pre id="claude-032">this only fails in production. Compare config, environment variables, build mode, data assumptions, and error handling. Do not guess; list evidence.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>production-only 問題最怕憑感覺猜。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="debug" data-search="33. 找出效能瓶頸 頁面或 api 慢 investigate why [page/api] is slow. identify likely bottlenecks, add lightweight measurement if needed, and propose fixes ranked by impact and risk. 先量測再優化。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Debug</span>
+              <h3>33. 找出效能瓶頸</h3>
+              <p>頁面或 API 慢</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-033">複製</button>
+              <pre id="claude-033">investigate why [page/API] is slow. Identify likely bottlenecks, add lightweight measurement if needed, and propose fixes ranked by impact and risk.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>先量測再優化。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="debug" data-search="34. 非預期 ui 行為 互動元件怪怪的 debug why [component] behaves incorrectly when [condition]. trace state changes, event handlers, and rendering conditions before editing. ui bug 常在狀態流，而不是單一 css。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Debug</span>
+              <h3>34. 非預期 UI 行為</h3>
+              <p>互動元件怪怪的</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-034">複製</button>
+              <pre id="claude-034">debug why [component] behaves incorrectly when [condition]. Trace state changes, event handlers, and rendering conditions before editing.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>UI bug 常在狀態流，而不是單一 CSS。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="debug" data-search="35. 依 git 歷史找問題 最近才壞 use git history to find when [behavior] changed. identify the likely commit, explain the change, and suggest a minimal repair. 用歷史縮小範圍。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Debug</span>
+              <h3>35. 依 Git 歷史找問題</h3>
+              <p>最近才壞</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-035">複製</button>
+              <pre id="claude-035">use git history to find when [behavior] changed. Identify the likely commit, explain the change, and suggest a minimal repair.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>用歷史縮小範圍。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="debug" data-search="36. 資料不一致 資料庫或狀態錯亂 investigate why [data] is inconsistent between [source a] and [source b]. trace writes, reads, caching, and synchronization points. 資料問題需要追讀寫與快取。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Debug</span>
+              <h3>36. 資料不一致</h3>
+              <p>資料庫或狀態錯亂</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-036">複製</button>
+              <pre id="claude-036">investigate why [data] is inconsistent between [source A] and [source B]. Trace writes, reads, caching, and synchronization points.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>資料問題需要追讀寫與快取。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="docs" data-search="37. 產生技術文件 把程式轉成說明 explain how [feature/module] works as a technical document in traditional chinese. include architecture, flow, key files, edge cases, and verification steps. 指定讀者與內容結構，文件更可用。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">文件</span>
+              <h3>37. 產生技術文件</h3>
+              <p>把程式轉成說明</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-037">複製</button>
+              <pre id="claude-037">explain how [feature/module] works as a technical document in Traditional Chinese. Include architecture, flow, key files, edge cases, and verification steps.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>指定讀者與內容結構，文件更可用。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="docs" data-search="38. 產生 html 技術文章 要可分享網頁 turn @notes.md into a clean responsive html technical article. include table of contents, copyable command blocks, diagrams where useful, and references. 把格式需求一次說清楚。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">文件</span>
+              <h3>38. 產生 HTML 技術文章</h3>
+              <p>要可分享網頁</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-038">複製</button>
+              <pre id="claude-038">turn @notes.md into a clean responsive HTML technical article. Include table of contents, copyable command blocks, diagrams where useful, and references.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>把格式需求一次說清楚。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="docs" data-search="39. 補 readme 專案缺說明 update the readme with setup, local development, test commands, deployment, environment variables, and troubleshooting. keep it concise. readme 要以能跑起來為主。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">文件</span>
+              <h3>39. 補 README</h3>
+              <p>專案缺說明</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-039">複製</button>
+              <pre id="claude-039">update the README with setup, local development, test commands, deployment, environment variables, and troubleshooting. Keep it concise.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>README 要以能跑起來為主。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="docs" data-search="40. 寫變更紀錄 發版前 draft release notes from git diff since [tag]. group changes into features, fixes, breaking changes, migration notes, and known issues. 從 diff 產出使用者可讀版本。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">文件</span>
+              <h3>40. 寫變更紀錄</h3>
+              <p>發版前</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-040">複製</button>
+              <pre id="claude-040">draft release notes from git diff since [tag]. Group changes into features, fixes, breaking changes, migration notes, and known issues.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>從 diff 產出使用者可讀版本。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="docs" data-search="41. 寫架構決策紀錄 重要技術選擇 create an adr for choosing [decision]. include context, options considered, decision, consequences, and rollback plan. 把當下決策留給未來的人看。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">文件</span>
+              <h3>41. 寫架構決策紀錄</h3>
+              <p>重要技術選擇</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-041">複製</button>
+              <pre id="claude-041">create an ADR for choosing [decision]. Include context, options considered, decision, consequences, and rollback plan.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>把當下決策留給未來的人看。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="docs" data-search="42. 文件一致性檢查 文件可能過期 check whether the documentation in [file/dir] matches the current code. list outdated parts and propose precise updates before editing. 避免文件跟程式脫節。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">文件</span>
+              <h3>42. 文件一致性檢查</h3>
+              <p>文件可能過期</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-042">複製</button>
+              <pre id="claude-042">check whether the documentation in [file/dir] matches the current code. List outdated parts and propose precise updates before editing.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>避免文件跟程式脫節。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="workflow" data-search="43. plan mode 重構 多檔案改動 plan a refactor of [module] to [goal]. list every file you expect to touch, the reason, risks, and verification commands. do not edit until i approve. 高風險任務先規劃後執行。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">工作流</span>
+              <h3>43. Plan mode 重構</h3>
+              <p>多檔案改動</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-043">複製</button>
+              <pre id="claude-043">plan a refactor of [module] to [goal]. List every file you expect to touch, the reason, risks, and verification commands. Do not edit until I approve.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>高風險任務先規劃後執行。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="workflow" data-search="44. 建立 /ship skill 出貨前檢查 make me a /ship skill that runs tests, linter, typecheck, reviews git diff, drafts a conventional commit message, and shows it without committing. 把重複任務變成團隊命令。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">工作流</span>
+              <h3>44. 建立 /ship Skill</h3>
+              <p>出貨前檢查</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-044">複製</button>
+              <pre id="claude-044">make me a /ship skill that runs tests, linter, typecheck, reviews git diff, drafts a conventional commit message, and shows it without committing.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>把重複任務變成團隊命令。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="workflow" data-search="45. issue 端到端處理 從 ticket 到修復 read issue [id/link], summarize the expected behavior, find the relevant code, propose a plan, implement after approval, and verify with tests. 保留「先理解需求」這一步。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">工作流</span>
+              <h3>45. Issue 端到端處理</h3>
+              <p>從 ticket 到修復</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-045">複製</button>
+              <pre id="claude-045">read issue [ID/link], summarize the expected behavior, find the relevant code, propose a plan, implement after approval, and verify with tests.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>保留「先理解需求」這一步。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="workflow" data-search="46. 建立專案規則 長期協作 create or update claude.md with project commands, style rules, testing expectations, deployment notes, and things the agent must never do. 讓每次 session 都有共同上下文。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">工作流</span>
+              <h3>46. 建立專案規則</h3>
+              <p>長期協作</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-046">複製</button>
+              <pre id="claude-046">create or update CLAUDE.md with project commands, style rules, testing expectations, deployment notes, and things the agent must never do.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>讓每次 session 都有共同上下文。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="workflow" data-search="47. 風險分級修復 很多問題時 triage these issues into must-fix, should-fix, and later. for each, estimate risk, affected files, verification method, and recommended order. 避免看到問題就全部一起改。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">工作流</span>
+              <h3>47. 風險分級修復</h3>
+              <p>很多問題時</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-047">複製</button>
+              <pre id="claude-047">triage these issues into must-fix, should-fix, and later. For each, estimate risk, affected files, verification method, and recommended order.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>避免看到問題就全部一起改。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="workflow" data-search="48. 生成開發檢查表 新功能開始前 create a development checklist for [feature]. include requirements, files to inspect, implementation steps, tests, review points, and release notes. 把模糊任務拆成可追蹤項目。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">工作流</span>
+              <h3>48. 生成開發檢查表</h3>
+              <p>新功能開始前</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-048">複製</button>
+              <pre id="claude-048">create a development checklist for [feature]. Include requirements, files to inspect, implementation steps, tests, review points, and release notes.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>把模糊任務拆成可追蹤項目。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="workflow" data-search="49. 自動化例行任務 重複行政或開發流程 identify which parts of [recurring task] can be automated safely. propose scripts, commands, or skills, and list what should stay human-reviewed. 自動化也需要邊界。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">工作流</span>
+              <h3>49. 自動化例行任務</h3>
+              <p>重複行政或開發流程</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-049">複製</button>
+              <pre id="claude-049">identify which parts of [recurring task] can be automated safely. Propose scripts, commands, or skills, and list what should stay human-reviewed.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>自動化也需要邊界。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="workflow" data-search="50. 成本與上下文控制 大型專案 suggest a low-token workflow for this task. tell me what files you need first, what can be ignored, and when to use subagents or separate sessions. 大型任務要管理上下文與成本。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">工作流</span>
+              <h3>50. 成本與上下文控制</h3>
+              <p>大型專案</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-050">複製</button>
+              <pre id="claude-050">suggest a low-token workflow for this task. Tell me what files you need first, what can be ignored, and when to use subagents or separate sessions.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>大型任務要管理上下文與成本。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="workflow" data-search="51. 教材網站工作流 教師開發互動教材 build a workflow for turning science lesson notes into an interactive html lesson: content outline, ui states, student worksheet, teacher guide, and deployment checks. 把教育內容製作變成穩定流程。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">工作流</span>
+              <h3>51. 教材網站工作流</h3>
+              <p>教師開發互動教材</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-051">複製</button>
+              <pre id="claude-051">build a workflow for turning science lesson notes into an interactive HTML lesson: content outline, UI states, student worksheet, teacher guide, and deployment checks.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>把教育內容製作變成穩定流程。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="workflow" data-search="52. 工作後回顧 任務完成後沉澱 summarize what changed, what commands verified it, what risks remain, and what reusable prompt or skill we should save for next time. 每次任務都留下可複用資產。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">工作流</span>
+              <h3>52. 工作後回顧</h3>
+              <p>任務完成後沉澱</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-052">複製</button>
+              <pre id="claude-052">summarize what changed, what commands verified it, what risks remain, and what reusable prompt or skill we should save for next time.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>每次任務都留下可複用資產。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="understand" data-search="53. 專案健康檢查 接手舊專案或教材網站 perform a project health check. inspect structure, dependencies, scripts, tests, deployment setup, environment files, and documentation. return a prioritized table of risks and quick wins. do not edit files. 先盤點專案體質，避免一開始就陷入局部修補。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">理解</span>
+              <h3>53. 專案健康檢查</h3>
+              <p>接手舊專案或教材網站</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-053">複製</button>
+              <pre id="claude-053">perform a project health check. Inspect structure, dependencies, scripts, tests, deployment setup, environment files, and documentation. Return a prioritized table of risks and quick wins. Do not edit files.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>先盤點專案體質，避免一開始就陷入局部修補。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="understand" data-search="54. 找出專案真正入口 不知道程式從哪裡開始 identify the real runtime entry points for this project: app startup, routing, build entry, api entry, and deployment entry. explain how a request or page load flows through them. 大型專案常有多個入口，先釐清入口才能安全修改。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">理解</span>
+              <h3>54. 找出專案真正入口</h3>
+              <p>不知道程式從哪裡開始</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-054">複製</button>
+              <pre id="claude-054">identify the real runtime entry points for this project: app startup, routing, build entry, API entry, and deployment entry. Explain how a request or page load flows through them.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>大型專案常有多個入口，先釐清入口才能安全修改。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="understand" data-search="55. 技術債地圖 規劃重構前 create a technical debt map for this repo. group issues by architecture, duplication, tests, documentation, dependencies, and developer experience. rank by impact and effort. 技術債要分類與排序，不能只列抱怨清單。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">理解</span>
+              <h3>55. 技術債地圖</h3>
+              <p>規劃重構前</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-055">複製</button>
+              <pre id="claude-055">create a technical debt map for this repo. Group issues by architecture, duplication, tests, documentation, dependencies, and developer experience. Rank by impact and effort.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>技術債要分類與排序，不能只列抱怨清單。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="understand" data-search="56. 依檔案變更推測功能 看到 diff 但不懂目的 read the current git diff and infer the intended feature or fix. summarize behavior changes, affected user flows, hidden assumptions, and missing verification. 讓 agent 先理解意圖，再判斷風險。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">理解</span>
+              <h3>56. 依檔案變更推測功能</h3>
+              <p>看到 diff 但不懂目的</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-056">複製</button>
+              <pre id="claude-056">read the current git diff and infer the intended feature or fix. Summarize behavior changes, affected user flows, hidden assumptions, and missing verification.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>讓 Agent 先理解意圖，再判斷風險。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="understand" data-search="57. 建立資料模型字典 資料結構複雜時 scan the data models, schemas, types, and migrations. create a concise data dictionary with entity purpose, key fields, relationships, and validation rules. 資料字典能減少後續功能開發時的誤判。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">理解</span>
+              <h3>57. 建立資料模型字典</h3>
+              <p>資料結構複雜時</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-057">複製</button>
+              <pre id="claude-057">scan the data models, schemas, types, and migrations. Create a concise data dictionary with entity purpose, key fields, relationships, and validation rules.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>資料字典能減少後續功能開發時的誤判。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="understand" data-search="58. 尋找重複邏輯 準備抽共用函式 find duplicated or near-duplicated logic related to [topic]. show locations, explain differences, and recommend whether to abstract, merge, or leave separate. 不是所有重複都該抽象，先比較差異再決定。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">理解</span>
+              <h3>58. 尋找重複邏輯</h3>
+              <p>準備抽共用函式</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-058">複製</button>
+              <pre id="claude-058">find duplicated or near-duplicated logic related to [topic]. Show locations, explain differences, and recommend whether to abstract, merge, or leave separate.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>不是所有重複都該抽象，先比較差異再決定。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="understand" data-search="59. 找出隱性規則 專案沒有文件 infer the unwritten project rules from existing code: naming, error handling, validation, state management, tests, and ui layout. provide examples from files. agent 需要本地規則，否則會用通用風格硬套。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">理解</span>
+              <h3>59. 找出隱性規則</h3>
+              <p>專案沒有文件</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-059">複製</button>
+              <pre id="claude-059">infer the unwritten project rules from existing code: naming, error handling, validation, state management, tests, and UI layout. Provide examples from files.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>Agent 需要本地規則，否則會用通用風格硬套。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="build" data-search="60. 最小可行修改 只想小修不重構 implement the smallest safe change to achieve [goal]. avoid broad refactors, new dependencies, or style churn. after editing, explain why this is minimal. 明確要求最小改動，可以降低破壞範圍。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">建置</span>
+              <h3>60. 最小可行修改</h3>
+              <p>只想小修不重構</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-060">複製</button>
+              <pre id="claude-060">implement the smallest safe change to achieve [goal]. Avoid broad refactors, new dependencies, or style churn. After editing, explain why this is minimal.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>明確要求最小改動，可以降低破壞範圍。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="build" data-search="61. 加上錯誤狀態 前端只有成功畫面 add empty, loading, and error states to [component/page]. follow existing ui patterns, avoid layout shift, and verify mobile behavior. 實務 ui 不能只有理想資料狀態。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">建置</span>
+              <h3>61. 加上錯誤狀態</h3>
+              <p>前端只有成功畫面</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-061">複製</button>
+              <pre id="claude-061">add empty, loading, and error states to [component/page]. Follow existing UI patterns, avoid layout shift, and verify mobile behavior.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>實務 UI 不能只有理想資料狀態。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="build" data-search="62. 加上可及性修正 按鈕、表單、互動元件 improve accessibility for [component/page]. check labels, focus states, keyboard navigation, semantic html, contrast, and screen reader text. keep visual changes minimal. 可及性修正要兼顧語意與操作，不只是加 aria。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">建置</span>
+              <h3>62. 加上可及性修正</h3>
+              <p>按鈕、表單、互動元件</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-062">複製</button>
+              <pre id="claude-062">improve accessibility for [component/page]. Check labels, focus states, keyboard navigation, semantic HTML, contrast, and screen reader text. Keep visual changes minimal.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>可及性修正要兼顧語意與操作，不只是加 aria。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="build" data-search="63. 移除不必要依賴 專案變重或套件混亂 inspect dependencies related to [feature]. identify unused or replaceable packages, estimate risk, remove only safe ones, and run build/tests afterward. 移除依賴需要證據與驗證，不能靠猜。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">建置</span>
+              <h3>63. 移除不必要依賴</h3>
+              <p>專案變重或套件混亂</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-063">複製</button>
+              <pre id="claude-063">inspect dependencies related to [feature]. Identify unused or replaceable packages, estimate risk, remove only safe ones, and run build/tests afterward.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>移除依賴需要證據與驗證，不能靠猜。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="build" data-search="64. 修正設定檔 工具或部署設定錯 fix the configuration for [tool/deployment]. compare with official or existing project patterns, explain each config change, and verify with the relevant command. 設定檔改動需要說明每個欄位的目的。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">建置</span>
+              <h3>64. 修正設定檔</h3>
+              <p>工具或部署設定錯</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-064">複製</button>
+              <pre id="claude-064">fix the configuration for [tool/deployment]. Compare with official or existing project patterns, explain each config change, and verify with the relevant command.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>設定檔改動需要說明每個欄位的目的。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="build" data-search="65. 建立 cli 工具 需要自動化小工具 create a small cli script for [task]. include help text, safe defaults, input validation, dry-run mode if useful, and a readme usage example. cli 工具要可被人安全使用，不只是能跑。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">建置</span>
+              <h3>65. 建立 CLI 工具</h3>
+              <p>需要自動化小工具</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-065">複製</button>
+              <pre id="claude-065">create a small CLI script for [task]. Include help text, safe defaults, input validation, dry-run mode if useful, and a README usage example.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>CLI 工具要可被人安全使用，不只是能跑。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="build" data-search="66. 建立資料轉換腳本 csv、json、教材資料整理 write a script that converts [input format] to [output format]. validate required fields, report skipped rows, preserve original data, and include a sample command. 資料轉換最怕靜默失敗，要有報告與保留原始資料。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">建置</span>
+              <h3>66. 建立資料轉換腳本</h3>
+              <p>CSV、JSON、教材資料整理</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-066">複製</button>
+              <pre id="claude-066">write a script that converts [input format] to [output format]. Validate required fields, report skipped rows, preserve original data, and include a sample command.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>資料轉換最怕靜默失敗，要有報告與保留原始資料。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="build" data-search="67. 加上設定範例 專案缺 .env 範本 create or update the environment variable example file. include required keys, optional keys, safe placeholder values, and documentation for where each value is used. 環境變數文件能大幅降低部署踩雷。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">建置</span>
+              <h3>67. 加上設定範例</h3>
+              <p>專案缺 .env 範本</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-067">複製</button>
+              <pre id="claude-067">create or update the environment variable example file. Include required keys, optional keys, safe placeholder values, and documentation for where each value is used.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>環境變數文件能大幅降低部署踩雷。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="build" data-search="68. github pages 修復 靜態網站部署失敗 inspect this static site for github pages deployment issues: base path, relative links, asset paths, case-sensitive filenames, build output, and 404 handling. fix only confirmed issues. github pages 常見問題集中在路徑與大小寫。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">建置</span>
+              <h3>68. GitHub Pages 修復</h3>
+              <p>靜態網站部署失敗</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-068">複製</button>
+              <pre id="claude-068">inspect this static site for GitHub Pages deployment issues: base path, relative links, asset paths, case-sensitive filenames, build output, and 404 handling. Fix only confirmed issues.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>GitHub Pages 常見問題集中在路徑與大小寫。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="test" data-search="69. 測試策略設計 功能開始前 design a test strategy for [feature]. separate unit, integration, e2e, manual checks, and visual checks. recommend the smallest set that gives useful confidence. 先設計測試策略，避免測太少或測錯層級。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">測試</span>
+              <h3>69. 測試策略設計</h3>
+              <p>功能開始前</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-069">複製</button>
+              <pre id="claude-069">design a test strategy for [feature]. Separate unit, integration, e2e, manual checks, and visual checks. Recommend the smallest set that gives useful confidence.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>先設計測試策略，避免測太少或測錯層級。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="test" data-search="70. 建立 smoke test 部署後快速確認 create a smoke test checklist or script for this app. cover startup, homepage, core workflow, api health, and one failure case. keep it fast. smoke test 是部署後最低限度的安全網。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">測試</span>
+              <h3>70. 建立 smoke test</h3>
+              <p>部署後快速確認</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-070">複製</button>
+              <pre id="claude-070">create a smoke test checklist or script for this app. Cover startup, homepage, core workflow, API health, and one failure case. Keep it fast.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>smoke test 是部署後最低限度的安全網。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="test" data-search="71. 視覺回歸檢查 html 或前端改版 run or design a visual regression check for [page]. compare desktop and mobile screenshots, identify layout shifts, clipping, overlap, and unreadable text. 前端完成不能只看程式碼，畫面也要驗證。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">測試</span>
+              <h3>71. 視覺回歸檢查</h3>
+              <p>HTML 或前端改版</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-071">複製</button>
+              <pre id="claude-071">run or design a visual regression check for [page]. Compare desktop and mobile screenshots, identify layout shifts, clipping, overlap, and unreadable text.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>前端完成不能只看程式碼，畫面也要驗證。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="test" data-search="72. 手動測試腳本 沒有自動測試時 create a manual qa script for [feature]. include setup, test data, step-by-step actions, expected results, edge cases, and rollback checks. 沒有自動測試時，至少要有可重複人工驗證。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">測試</span>
+              <h3>72. 手動測試腳本</h3>
+              <p>沒有自動測試時</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-072">複製</button>
+              <pre id="claude-072">create a manual QA script for [feature]. Include setup, test data, step-by-step actions, expected results, edge cases, and rollback checks.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>沒有自動測試時，至少要有可重複人工驗證。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="test" data-search="73. 找出 flaky test 測試偶爾失敗 investigate flaky tests related to [test name or suite]. look for timing, shared state, network, randomness, cleanup, and order dependency. propose a stable fix. flaky test 要找不穩定來源，而不是反覆重跑。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">測試</span>
+              <h3>73. 找出 flaky test</h3>
+              <p>測試偶爾失敗</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-073">複製</button>
+              <pre id="claude-073">investigate flaky tests related to [test name or suite]. Look for timing, shared state, network, randomness, cleanup, and order dependency. Propose a stable fix.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>flaky test 要找不穩定來源，而不是反覆重跑。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="test" data-search="74. 測試資料整理 測試案例太亂 review the test fixtures and sample data. identify duplication, unclear naming, brittle assumptions, and opportunities to create reusable builders. 好的測試資料能讓測試更可讀、更穩。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">測試</span>
+              <h3>74. 測試資料整理</h3>
+              <p>測試案例太亂</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-074">複製</button>
+              <pre id="claude-074">review the test fixtures and sample data. Identify duplication, unclear naming, brittle assumptions, and opportunities to create reusable builders.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>好的測試資料能讓測試更可讀、更穩。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="test" data-search="75. 發版前驗證矩陣 改動影響多平台 create a release verification matrix for this change. include browsers, screen sizes, roles, data states, commands, and manual checks. 多平台任務需要矩陣，不然容易漏測。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">測試</span>
+              <h3>75. 發版前驗證矩陣</h3>
+              <p>改動影響多平台</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-075">複製</button>
+              <pre id="claude-075">create a release verification matrix for this change. Include browsers, screen sizes, roles, data states, commands, and manual checks.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>多平台任務需要矩陣，不然容易漏測。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="review" data-search="76. 差異最小化審查 擔心改太多 review my diff for unnecessary churn: formatting-only changes, unrelated refactors, renamed variables without value, and files that should not have changed. 控制 diff 大小可以降低 review 成本。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Review</span>
+              <h3>76. 差異最小化審查</h3>
+              <p>擔心改太多</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-076">複製</button>
+              <pre id="claude-076">review my diff for unnecessary churn: formatting-only changes, unrelated refactors, renamed variables without value, and files that should not have changed.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>控制 diff 大小可以降低 review 成本。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="review" data-search="77. 隱私與個資審查 處理學生、使用者或客戶資料 review this change for privacy risks: personal data exposure, logging sensitive fields, over-collection, retention, access control, and export/download behavior. 個資風險常藏在 log、匯出與權限細節。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Review</span>
+              <h3>77. 隱私與個資審查</h3>
+              <p>處理學生、使用者或客戶資料</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-077">複製</button>
+              <pre id="claude-077">review this change for privacy risks: personal data exposure, logging sensitive fields, over-collection, retention, access control, and export/download behavior.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>個資風險常藏在 log、匯出與權限細節。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="review" data-search="78. api 相容性審查 修改 api 或資料格式 review whether this change breaks api compatibility. check request/response schema, status codes, error format, defaults, migrations, and clients. api 破壞常不在編譯階段被發現。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Review</span>
+              <h3>78. API 相容性審查</h3>
+              <p>修改 API 或資料格式</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-078">複製</button>
+              <pre id="claude-078">review whether this change breaks API compatibility. Check request/response schema, status codes, error format, defaults, migrations, and clients.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>API 破壞常不在編譯階段被發現。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="review" data-search="79. 可觀測性審查 上 production 前 review whether this feature has enough observability. check logs, metrics, error reporting, trace context, and whether failures will be diagnosable. 能上線不等於能維運，故障時要看得到。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Review</span>
+              <h3>79. 可觀測性審查</h3>
+              <p>上 production 前</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-079">複製</button>
+              <pre id="claude-079">review whether this feature has enough observability. Check logs, metrics, error reporting, trace context, and whether failures will be diagnosable.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>能上線不等於能維運，故障時要看得到。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="review" data-search="80. 無障礙審查 網站或教材頁面 review this page for accessibility. check semantic structure, heading order, keyboard use, alt text, labels, contrast, focus visibility, and reduced motion concerns. 教材與公共網頁更需要可及性。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Review</span>
+              <h3>80. 無障礙審查</h3>
+              <p>網站或教材頁面</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-080">複製</button>
+              <pre id="claude-080">review this page for accessibility. Check semantic structure, heading order, keyboard use, alt text, labels, contrast, focus visibility, and reduced motion concerns.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>教材與公共網頁更需要可及性。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="review" data-search="81. 教材內容審查 自然科或研習文件 review this educational content for age-appropriate language, scientific accuracy, misconception risks, activity safety, assessment alignment, and teacher usability. 教育內容審查要同時看科學正確與教學可用。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Review</span>
+              <h3>81. 教材內容審查</h3>
+              <p>自然科或研習文件</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-081">複製</button>
+              <pre id="claude-081">review this educational content for age-appropriate language, scientific accuracy, misconception risks, activity safety, assessment alignment, and teacher usability.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>教育內容審查要同時看科學正確與教學可用。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="review" data-search="82. ai 生成內容審查 大量 ai 產出後 review this ai-generated content for hallucinations, unsupported claims, citation gaps, repeated wording, tone mismatch, and parts that need human verification. ai 產物需要專門查幻覺與引用缺口。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Review</span>
+              <h3>82. AI 生成內容審查</h3>
+              <p>大量 AI 產出後</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-082">複製</button>
+              <pre id="claude-082">review this AI-generated content for hallucinations, unsupported claims, citation gaps, repeated wording, tone mismatch, and parts that need human verification.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>AI 產物需要專門查幻覺與引用缺口。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="debug" data-search="83. 權限錯誤診斷 403、401、rls、cors debug this permission error. compare authentication state, request headers, server rules, cors, database policies, and environment variables. list evidence before proposing fixes. 權限問題通常跨前端、後端與資料庫。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Debug</span>
+              <h3>83. 權限錯誤診斷</h3>
+              <p>403、401、RLS、CORS</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-083">複製</button>
+              <pre id="claude-083">debug this permission error. Compare authentication state, request headers, server rules, CORS, database policies, and environment variables. List evidence before proposing fixes.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>權限問題通常跨前端、後端與資料庫。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="debug" data-search="84. 路徑與檔名錯誤 windows 可跑但部署失敗 debug asset or import path failures. check relative paths, case sensitivity, spaces, non-ascii names, build output, and deployment base url. 本機與部署環境的檔名規則常不同。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Debug</span>
+              <h3>84. 路徑與檔名錯誤</h3>
+              <p>Windows 可跑但部署失敗</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-084">複製</button>
+              <pre id="claude-084">debug asset or import path failures. Check relative paths, case sensitivity, spaces, non-ASCII names, build output, and deployment base URL.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>本機與部署環境的檔名規則常不同。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="debug" data-search="85. 瀏覽器相容問題 某瀏覽器壞掉 investigate why [feature] fails in [browser/device]. check supported apis, css compatibility, event handling, polyfills, and graceful fallback. 跨瀏覽器 bug 要查 api 與 css 支援差異。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Debug</span>
+              <h3>85. 瀏覽器相容問題</h3>
+              <p>某瀏覽器壞掉</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-085">複製</button>
+              <pre id="claude-085">investigate why [feature] fails in [browser/device]. Check supported APIs, CSS compatibility, event handling, polyfills, and graceful fallback.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>跨瀏覽器 bug 要查 API 與 CSS 支援差異。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="debug" data-search="86. 記憶體或效能異常 跑久變慢或卡住 investigate memory or performance degradation in [feature]. look for leaks, repeated listeners, unbounded arrays, expensive renders, and missing cleanup. 效能問題常是累積效應，不是單次錯誤。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Debug</span>
+              <h3>86. 記憶體或效能異常</h3>
+              <p>跑久變慢或卡住</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-086">複製</button>
+              <pre id="claude-086">investigate memory or performance degradation in [feature]. Look for leaks, repeated listeners, unbounded arrays, expensive renders, and missing cleanup.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>效能問題常是累積效應，不是單次錯誤。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="debug" data-search="87. 非同步競態條件 偶發錯誤 look for race conditions in [workflow]. trace async calls, cancellation, stale state, retries, loading flags, and ordering assumptions. propose a deterministic fix. 偶發錯誤常來自非同步順序不穩。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Debug</span>
+              <h3>87. 非同步競態條件</h3>
+              <p>偶發錯誤</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-087">複製</button>
+              <pre id="claude-087">look for race conditions in [workflow]. Trace async calls, cancellation, stale state, retries, loading flags, and ordering assumptions. Propose a deterministic fix.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>偶發錯誤常來自非同步順序不穩。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="debug" data-search="88. 部署環境差異 本機正常、線上壞 compare local and deployment behavior for [issue]. check node version, package manager, build command, env vars, static paths, server config, and cached assets. 部署問題要系統化比對環境。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">Debug</span>
+              <h3>88. 部署環境差異</h3>
+              <p>本機正常、線上壞</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-088">複製</button>
+              <pre id="claude-088">compare local and deployment behavior for [issue]. Check Node version, package manager, build command, env vars, static paths, server config, and cached assets.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>部署問題要系統化比對環境。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="docs" data-search="89. 產生故障排除文件 安裝或部署踩雷後 write a troubleshooting guide for [tool/project]. include symptoms, likely causes, diagnostic commands, fixes, and how to confirm success. 把踩過的雷變成下次可查的文件。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">文件</span>
+              <h3>89. 產生故障排除文件</h3>
+              <p>安裝或部署踩雷後</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-089">複製</button>
+              <pre id="claude-089">write a troubleshooting guide for [tool/project]. Include symptoms, likely causes, diagnostic commands, fixes, and how to confirm success.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>把踩過的雷變成下次可查的文件。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="docs" data-search="90. 產生一鍵複製命令文件 技術文章或研習講義 create an html technical guide with copy buttons for every command and prompt. keep commands in separate blocks, explain when to use each, and include warnings. 命令可複製能降低教學與實作摩擦。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">文件</span>
+              <h3>90. 產生一鍵複製命令文件</h3>
+              <p>技術文章或研習講義</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-090">複製</button>
+              <pre id="claude-090">create an HTML technical guide with copy buttons for every command and prompt. Keep commands in separate blocks, explain when to use each, and include warnings.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>命令可複製能降低教學與實作摩擦。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="docs" data-search="91. 把聊天紀錄整理成 sop 解決過程很長時 turn this conversation or notes into an sop. extract the final working steps, remove failed attempts unless useful as warnings, and include verification checkpoints. 長對話要變成可執行 sop，而不是流水帳。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">文件</span>
+              <h3>91. 把聊天紀錄整理成 SOP</h3>
+              <p>解決過程很長時</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-091">複製</button>
+              <pre id="claude-091">turn this conversation or notes into an SOP. Extract the final working steps, remove failed attempts unless useful as warnings, and include verification checkpoints.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>長對話要變成可執行 SOP，而不是流水帳。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="docs" data-search="92. 產生研習講義版 給教師或團隊學習 convert this technical content into a workshop handout in traditional chinese. include objectives, prerequisites, step-by-step practice, reflection questions, and extension tasks. 研習講義需要學習路徑，不只是技術說明。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">文件</span>
+              <h3>92. 產生研習講義版</h3>
+              <p>給教師或團隊學習</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-092">複製</button>
+              <pre id="claude-092">convert this technical content into a workshop handout in Traditional Chinese. Include objectives, prerequisites, step-by-step practice, reflection questions, and extension tasks.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>研習講義需要學習路徑，不只是技術說明。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="docs" data-search="93. 產生雙語文件 需要中英對照 create a bilingual traditional chinese and english technical document. keep terminology consistent, use tables for mappings, and avoid overly literal translation. 雙語文件要重視術語一致與自然表達。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">文件</span>
+              <h3>93. 產生雙語文件</h3>
+              <p>需要中英對照</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-093">複製</button>
+              <pre id="claude-093">create a bilingual Traditional Chinese and English technical document. Keep terminology consistent, use tables for mappings, and avoid overly literal translation.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>雙語文件要重視術語一致與自然表達。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="docs" data-search="94. 濃縮成主管摘要 要向主管或行政說明 summarize this technical work for a non-technical decision maker. include purpose, benefits, risks, cost, timeline, and what approval is needed. 技術成果常需要轉成決策語言。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">文件</span>
+              <h3>94. 濃縮成主管摘要</h3>
+              <p>要向主管或行政說明</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-094">複製</button>
+              <pre id="claude-094">summarize this technical work for a non-technical decision maker. Include purpose, benefits, risks, cost, timeline, and what approval is needed.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>技術成果常需要轉成決策語言。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="workflow" data-search="95. 長任務階段控管 大改版或大型文件 treat this as a multi-stage task. stage 1: understand and inventory. stage 2: propose plan. stage 3: implement. stage 4: verify. stop after each stage for approval. 大型任務需要節點，不然容易失控。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">工作流</span>
+              <h3>95. 長任務階段控管</h3>
+              <p>大改版或大型文件</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-095">複製</button>
+              <pre id="claude-095">treat this as a multi-stage task. Stage 1: understand and inventory. Stage 2: propose plan. Stage 3: implement. Stage 4: verify. Stop after each stage for approval.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>大型任務需要節點，不然容易失控。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="workflow" data-search="96. agent 自我驗證規則 避免謊報完成 before saying the task is done, provide evidence: commands run, outputs checked, files inspected, screenshots if relevant, and remaining risks. if not verified, say so clearly. 要求證據能降低「看起來完成」的假完成。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">工作流</span>
+              <h3>96. Agent 自我驗證規則</h3>
+              <p>避免謊報完成</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-096">複製</button>
+              <pre id="claude-096">before saying the task is done, provide evidence: commands run, outputs checked, files inspected, screenshots if relevant, and remaining risks. If not verified, say so clearly.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>要求證據能降低「看起來完成」的假完成。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="workflow" data-search="97. 生成子任務分工 多 agent 或多人協作 split this project into independent work packages. for each package, define goal, files likely involved, inputs, outputs, verification, and dependency order. 拆任務要避免彼此踩檔案與順序混亂。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">工作流</span>
+              <h3>97. 生成子任務分工</h3>
+              <p>多 Agent 或多人協作</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-097">複製</button>
+              <pre id="claude-097">split this project into independent work packages. For each package, define goal, files likely involved, inputs, outputs, verification, and dependency order.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>拆任務要避免彼此踩檔案與順序混亂。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="workflow" data-search="98. 建立每日開發回報 連續多天專案 create a daily progress report from the current repo state and notes: completed, in progress, blockers, decisions, risks, and next actions. 長期專案需要穩定回報格式。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">工作流</span>
+              <h3>98. 建立每日開發回報</h3>
+              <p>連續多天專案</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-098">複製</button>
+              <pre id="claude-098">create a daily progress report from the current repo state and notes: completed, in progress, blockers, decisions, risks, and next actions.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>長期專案需要穩定回報格式。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="workflow" data-search="99. prompt 改寫成可重複模板 把一次性提示詞變通用 turn this prompt into a reusable template. identify variables, required context, optional constraints, expected output format, and verification steps. 模板化後才容易分享與長期使用。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">工作流</span>
+              <h3>99. Prompt 改寫成可重複模板</h3>
+              <p>把一次性提示詞變通用</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-099">複製</button>
+              <pre id="claude-099">turn this prompt into a reusable template. Identify variables, required context, optional constraints, expected output format, and verification steps.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>模板化後才容易分享與長期使用。</div>
+          </article>
+<article class="prompt-card" data-agent="claude" data-cat="workflow" data-search="100. prompt library 內部化 建立自己的團隊提示詞庫 build an internal prompt library for this team. group prompts by workflow, add when-to-use notes, copyable blocks, examples, anti-patterns, and candidates for skills. 最終目標不是收藏別人的 100 個，而是長出自己的工作流。">
+            <div class="prompt-head"><span class="agent-label">Claude Code</span>
+              <span class="tag">工作流</span>
+              <h3>100. Prompt Library 內部化</h3>
+              <p>建立自己的團隊提示詞庫</p>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-copy="claude-100">複製</button>
+              <pre id="claude-100">build an internal prompt library for this team. Group prompts by workflow, add when-to-use notes, copyable blocks, examples, anti-patterns, and candidates for skills.</pre>
+            </div>
+            <div class="why"><strong>為什麼有效：</strong>最終目標不是收藏別人的 100 個，而是長出自己的工作流。</div>
+          </article>
+</div>
+</section>
+<section id="codex" class="agent-section">
+<h2>Codex：100 個 Prompt</h2>
+<p>適合在 repo 中讀寫程式、跑測試、整理 AGENTS.md、產出 PR 與工程文件。</p>
+<div class="prompt-list">
+<article class="prompt-card" data-agent="codex" data-cat="understand"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">理解</span><h3>1. Repo 全景導覽</h3><p>第一次接手專案</p></div><div class="codebox"><button class="copy" data-copy="codex-001">複製</button><pre id="codex-001">請先不要修改檔案。請掃描這個 repo，整理：
+1. 專案用途
+2. 技術架構
+3. 主要資料夾
+4. 入口檔案
+5. 啟動、測試、建置命令
+6. 你建議我先讀哪些檔案
+最後列出你需要我確認的問題。</pre></div><div class="why"><strong>為什麼有效：</strong>先建立專案地圖，降低一開始就改錯地方的風險。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="understand"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">理解</span><h3>2. 找出功能位置</h3><p>知道行為但不知道在哪裡</p></div><div class="codebox"><button class="copy" data-copy="codex-002">複製</button><pre id="codex-002">請找出「[功能或行為]」在這個 codebase 中實作的位置。請列出候選檔案、判斷哪一個是主要來源、相關測試在哪裡。先不要修改檔案。</pre></div><div class="why"><strong>為什麼有效：</strong>讓 Codex 先定位 source of truth，再進入實作。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="understand"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">理解</span><h3>3. 追蹤請求流程</h3><p>後端或全端專案</p></div><div class="codebox"><button class="copy" data-copy="codex-003">複製</button><pre id="codex-003">請追蹤 [URL/API/功能名稱] 的完整 request flow：從入口、路由、controller、service、資料庫或外部服務，到 response。請依執行順序列出檔案與責任。</pre></div><div class="why"><strong>為什麼有效：</strong>流程式理解比單檔摘要更適合修改真實功能。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="understand"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">理解</span><h3>4. 前端狀態流導覽</h3><p>互動頁面看不懂時</p></div><div class="codebox"><button class="copy" data-copy="codex-004">複製</button><pre id="codex-004">請說明 [頁面/元件] 的 state flow：資料從哪裡來、哪些事件會改變狀態、哪些條件會重新 render、錯誤與 loading 狀態如何處理。不要改檔案。</pre></div><div class="why"><strong>為什麼有效：</strong>UI 問題通常來自狀態與事件，不只是畫面。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="understand"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">理解</span><h3>5. AGENTS.md 掃描</h3><p>開始 Codex 任務前</p></div><div class="codebox"><button class="copy" data-copy="codex-005">複製</button><pre id="codex-005">請找出此 repo 中所有 AGENTS.md，說明每個檔案的作用範圍、規則、測試命令與可能衝突。接下來若修改檔案，請遵守對應範圍內的規則。</pre></div><div class="why"><strong>為什麼有效：</strong>AGENTS.md 是 Codex 專案規則的重要來源。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="understand"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">理解</span><h3>6. 專案慣例萃取</h3><p>沒有明確文件時</p></div><div class="codebox"><button class="copy" data-copy="codex-006">複製</button><pre id="codex-006">請從既有程式碼推論專案慣例：命名、錯誤處理、資料驗證、測試風格、UI 排版、API response 格式。請附檔案例子，先不要修改。</pre></div><div class="why"><strong>為什麼有效：</strong>讓 Codex 跟隨本地風格，而不是產生通用樣板。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="understand"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">理解</span><h3>7. 技術債地圖</h3><p>重構前</p></div><div class="codebox"><button class="copy" data-copy="codex-007">複製</button><pre id="codex-007">請建立這個 repo 的技術債地圖，依架構、重複邏輯、測試缺口、文件缺口、依賴風險、部署風險分類。請用影響程度與修復成本排序。</pre></div><div class="why"><strong>為什麼有效：</strong>把模糊的「專案很亂」變成可安排的修復清單。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="understand"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">理解</span><h3>8. Git 歷史理解</h3><p>接手別人改過的功能</p></div><div class="codebox"><button class="copy" data-copy="codex-008">複製</button><pre id="codex-008">請用 git history 理解 [功能/檔案] 最近的演變。整理關鍵 commit、改動原因、可能留下的風險。不要修改檔案。</pre></div><div class="why"><strong>為什麼有效：</strong>歷史脈絡常能解釋看似奇怪的程式碼。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="understand"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">理解</span><h3>9. 資料模型字典</h3><p>資料結構複雜時</p></div><div class="codebox"><button class="copy" data-copy="codex-009">複製</button><pre id="codex-009">請掃描 schema、types、models、migrations，建立資料模型字典。每個 entity 請列出用途、重要欄位、關聯、驗證規則與常見查詢位置。</pre></div><div class="why"><strong>為什麼有效：</strong>資料字典能避免後續功能誤用欄位或關聯。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="understand"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">理解</span><h3>10. 依 diff 推測意圖</h3><p>看到一批未提交修改時</p></div><div class="codebox"><button class="copy" data-copy="codex-010">複製</button><pre id="codex-010">請閱讀目前 git diff，推測這批修改想完成什麼。整理行為改變、受影響流程、風險、缺少的測試與你會問作者的問題。不要修改。</pre></div><div class="why"><strong>為什麼有效：</strong>Review 前先理解意圖，判斷會更準。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="understand"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">理解</span><h3>11. 依賴關係圖</h3><p>準備拆模組</p></div><div class="codebox"><button class="copy" data-copy="codex-011">複製</button><pre id="codex-011">請分析 [module] 的依賴關係：誰呼叫它、它呼叫誰、哪些是核心依賴、哪些是偶然耦合。請建議拆分或保留的方向。</pre></div><div class="why"><strong>為什麼有效：</strong>避免重構時只看單一檔案。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="understand"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">理解</span><h3>12. 安裝與執行盤點</h3><p>專案跑不起來時</p></div><div class="codebox"><button class="copy" data-copy="codex-012">複製</button><pre id="codex-012">請檢查這個專案的安裝、啟動、測試與建置方式。列出必要環境、Node/Python/套件版本、環境變數、常見錯誤，以及最小可驗證啟動流程。</pre></div><div class="why"><strong>為什麼有效：</strong>先建立可跑環境，再談修改。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="build"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">建置</span><h3>13. 最小功能實作</h3><p>新增小功能</p></div><div class="codebox"><button class="copy" data-copy="codex-013">複製</button><pre id="codex-013">請實作 [功能]。請遵守既有專案模式，避免新增依賴或大重構。完成後執行最小相關測試，並列出修改檔案、驗證命令與殘餘風險。</pre></div><div class="why"><strong>為什麼有效：</strong>限制改動範圍並要求驗證。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="build"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">建置</span><h3>14. 先計畫再實作</h3><p>多檔案任務</p></div><div class="codebox"><button class="copy" data-copy="codex-014">複製</button><pre id="codex-014">這個任務可能跨多個檔案。請先提出實作計畫，列出會修改的檔案、每個檔案的目的、測試方式與風險。等我確認後再開始修改。</pre></div><div class="why"><strong>為什麼有效：</strong>高風險任務先踩煞車。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="build"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">建置</span><h3>15. 新增 API</h3><p>後端功能</p></div><div class="codebox"><button class="copy" data-copy="codex-015">複製</button><pre id="codex-015">請新增 [API endpoint]。請沿用既有 routing、validation、auth、error response 與測試風格。請包含成功、驗證失敗、未授權與例外情境測試。</pre></div><div class="why"><strong>為什麼有效：</strong>API 不只要 happy path。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="build"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">建置</span><h3>16. 新增前端頁面</h3><p>RWD 頁面</p></div><div class="codebox"><button class="copy" data-copy="codex-016">複製</button><pre id="codex-016">請新增 [頁面名稱]。版面請參考 [既有頁面/元件]，包含 loading、empty、error 狀態，並確認手機與桌機不重疊、不溢出、不截字。</pre></div><div class="why"><strong>為什麼有效：</strong>前端交付要包含狀態與響應式檢查。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="build"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">建置</span><h3>17. 表單驗證</h3><p>表單輸入</p></div><div class="codebox"><button class="copy" data-copy="codex-017">複製</button><pre id="codex-017">請為 [form] 加上驗證。請使用專案既有驗證方式，處理必填、格式、邊界值與後端錯誤顯示。請補上對應測試。</pre></div><div class="why"><strong>為什麼有效：</strong>表單驗證最容易前後端不一致。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="build"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">建置</span><h3>18. 資料庫 migration</h3><p>新增欄位或表格</p></div><div class="codebox"><button class="copy" data-copy="codex-018">複製</button><pre id="codex-018">請新增資料庫 migration 來支援 [需求]。請檢查既有 migration 風格、更新 model/schema/types，並提供 rollback 或降級注意事項。若可行，執行 migration 驗證。</pre></div><div class="why"><strong>為什麼有效：</strong>資料庫修改需要 schema、程式與回滾一起想。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="build"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">建置</span><h3>19. CLI 腳本</h3><p>自動化任務</p></div><div class="codebox"><button class="copy" data-copy="codex-019">複製</button><pre id="codex-019">請建立一個 CLI/script 完成 [任務]。請包含 help、參數驗證、錯誤訊息、dry-run 模式、範例命令與測試。</pre></div><div class="why"><strong>為什麼有效：</strong>自動化工具要可安全重複執行。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="build"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">建置</span><h3>20. CSV/JSON 轉換</h3><p>資料整理</p></div><div class="codebox"><button class="copy" data-copy="codex-020">複製</button><pre id="codex-020">請寫一個資料轉換腳本，把 [input] 轉成 [output]。請保留原始檔、驗證必要欄位、回報略過資料、輸出統計摘要，並提供範例命令。</pre></div><div class="why"><strong>為什麼有效：</strong>避免資料轉換時靜默遺失資料。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="build"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">建置</span><h3>21. 環境變數範例</h3><p>部署前</p></div><div class="codebox"><button class="copy" data-copy="codex-021">複製</button><pre id="codex-021">請建立或更新 .env.example。列出必要與選填環境變數、用途、安全 placeholder、取得方式與哪些檔案會讀取它們。不要放入真實 secret。</pre></div><div class="why"><strong>為什麼有效：</strong>部署問題常來自環境變數不清楚。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="build"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">建置</span><h3>22. 可及性修正</h3><p>網站或教材頁面</p></div><div class="codebox"><button class="copy" data-copy="codex-022">複製</button><pre id="codex-022">請改善 [頁面/元件] 的 accessibility：語意 HTML、label、focus、鍵盤操作、alt text、對比、heading order。請保持視覺變動最小。</pre></div><div class="why"><strong>為什麼有效：</strong>讓修正集中在可及性，不變成整頁改版。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="build"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">建置</span><h3>23. GitHub Pages 修復</h3><p>靜態網站部署</p></div><div class="codebox"><button class="copy" data-copy="codex-023">複製</button><pre id="codex-023">請檢查 GitHub Pages 部署問題：base path、相對路徑、大小寫、檔名空白、資源載入、build output、404。只修正能證實的問題。</pre></div><div class="why"><strong>為什麼有效：</strong>GitHub Pages 常見錯誤集中在路徑與檔名。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="build"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">建置</span><h3>24. 移除不必要依賴</h3><p>專案瘦身</p></div><div class="codebox"><button class="copy" data-copy="codex-024">複製</button><pre id="codex-024">請檢查 [相關功能] 的 dependencies。找出未使用、可用原生功能替代、或風險過高的套件。先列計畫，確認後再移除並跑 build/test。</pre></div><div class="why"><strong>為什麼有效：</strong>移除依賴需要證據，不是憑感覺。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="build"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">建置</span><h3>25. 原型隔離</h3><p>快速試做</p></div><div class="codebox"><button class="copy" data-copy="codex-025">複製</button><pre id="codex-025">請為 [想法] 做一個最小原型。請把原型隔離在清楚位置，不影響既有功能。列出假設、限制、若要 production 化需要補什麼。</pre></div><div class="why"><strong>為什麼有效：</strong>避免原型污染正式架構。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="test"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">測試</span><h3>26. 修失敗測試</h3><p>測試紅燈</p></div><div class="codebox"><button class="copy" data-copy="codex-026">複製</button><pre id="codex-026">[測試名稱/檔案] 正在失敗。請找出根因，判斷應修程式或測試，做最小修正，重新執行相關測試，並說明證據。</pre></div><div class="why"><strong>為什麼有效：</strong>要求根因分析，不只是讓測試變綠。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="test"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">測試</span><h3>27. 補單元測試</h3><p>提高覆蓋率</p></div><div class="codebox"><button class="copy" data-copy="codex-027">複製</button><pre id="codex-027">請為 [檔案/函式] 補單元測試。請參考既有測試風格，涵蓋正常、邊界、錯誤與回歸情境。完成後執行最小相關測試。</pre></div><div class="why"><strong>為什麼有效：</strong>指定測試類型與風格，避免測試散亂。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="test"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">測試</span><h3>28. 先寫回歸測試</h3><p>修 bug 前</p></div><div class="codebox"><button class="copy" data-copy="codex-028">複製</button><pre id="codex-028">請先寫一個會重現 [bug] 的回歸測試，確認它在目前版本失敗；再做最小修正，最後重新執行測試確認通過。</pre></div><div class="why"><strong>為什麼有效：</strong>確保真的修到 bug，而不是剛好繞過。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="test"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">測試</span><h3>29. 測試策略</h3><p>功能開始前</p></div><div class="codebox"><button class="copy" data-copy="codex-029">複製</button><pre id="codex-029">請為 [功能] 設計測試策略，分成 unit、integration、e2e、visual、manual QA。請推薦最小但有信心的測試集合。</pre></div><div class="why"><strong>為什麼有效：</strong>先決定測試層級，避免過度或不足測試。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="test"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">測試</span><h3>30. 整合測試</h3><p>跨模組流程</p></div><div class="codebox"><button class="copy" data-copy="codex-030">複製</button><pre id="codex-030">請為 [workflow] 建立整合測試。請使用專案既有測試工具，避免 mock 掉真正要驗證的核心行為，並說明測試覆蓋哪些風險。</pre></div><div class="why"><strong>為什麼有效：</strong>整合測試要測真流程。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="test"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">測試</span><h3>31. Smoke test</h3><p>部署後快速確認</p></div><div class="codebox"><button class="copy" data-copy="codex-031">複製</button><pre id="codex-031">請建立 smoke test 清單或腳本，涵蓋啟動、首頁、核心流程、API health、一個錯誤情境。要求快速、穩定、適合部署後執行。</pre></div><div class="why"><strong>為什麼有效：</strong>部署後需要最小安全網。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="test"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">測試</span><h3>32. 視覺 QA</h3><p>前端改版</p></div><div class="codebox"><button class="copy" data-copy="codex-032">複製</button><pre id="codex-032">請檢查 [頁面] 的視覺 QA：桌機、平板、手機是否有重疊、裁切、跳動、文字溢出、圖片比例錯誤。請列出問題與修正。</pre></div><div class="why"><strong>為什麼有效：</strong>前端不是 build 過就算完成。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="test"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">測試</span><h3>33. Flaky test 診斷</h3><p>測試偶爾失敗</p></div><div class="codebox"><button class="copy" data-copy="codex-033">複製</button><pre id="codex-033">請調查 [test] 為什麼 flaky。檢查 timing、shared state、清理流程、網路、隨機值、順序依賴。提出穩定修正並驗證。</pre></div><div class="why"><strong>為什麼有效：</strong>flaky test 的問題是穩定性，不是重跑次數。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="test"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">測試</span><h3>34. 測試命令盤點</h3><p>不熟 repo</p></div><div class="codebox"><button class="copy" data-copy="codex-034">複製</button><pre id="codex-034">請找出這個 repo 的 test、lint、typecheck、format、build 命令，說明各自用途，並建議完成小修、大修、發版前各該跑哪些。</pre></div><div class="why"><strong>為什麼有效：</strong>先知道驗證路徑，才知道完成標準。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="test"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">測試</span><h3>35. 手動測試腳本</h3><p>沒有自動測試時</p></div><div class="codebox"><button class="copy" data-copy="codex-035">複製</button><pre id="codex-035">請為 [功能] 建立手動 QA 腳本，包含前置資料、步驟、預期結果、邊界情境、錯誤情境、截圖檢查與回滾檢查。</pre></div><div class="why"><strong>為什麼有效：</strong>沒有自動測試時，至少要能重複人工驗證。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="test"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">測試</span><h3>36. 發版驗證矩陣</h3><p>上線前</p></div><div class="codebox"><button class="copy" data-copy="codex-036">複製</button><pre id="codex-036">請建立這次修改的發版驗證矩陣，包含角色、瀏覽器、裝置尺寸、資料狀態、命令檢查、人工檢查與 rollback 條件。</pre></div><div class="why"><strong>為什麼有效：</strong>發版前用矩陣避免漏測。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="test"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">測試</span><h3>37. 效能基準</h3><p>效能改善</p></div><div class="codebox"><button class="copy" data-copy="codex-037">複製</button><pre id="codex-037">請為 [效能問題] 建立 before/after 測量方式。先量測目前狀態，再做修正，最後用相同方式驗證改善幅度。</pre></div><div class="why"><strong>為什麼有效：</strong>效能任務需要數據而不是感覺。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="test"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">測試</span><h3>38. 測試資料整理</h3><p>測試難讀</p></div><div class="codebox"><button class="copy" data-copy="codex-038">複製</button><pre id="codex-038">請整理測試資料與 fixtures。找出重複、命名不清、脆弱假設，建議是否建立 reusable builders。先列計畫再修改。</pre></div><div class="why"><strong>為什麼有效：</strong>測試可維護性常卡在資料準備。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="review"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Review</span><h3>39. 未提交修改審查</h3><p>commit 前</p></div><div class="codebox"><button class="copy" data-copy="codex-039">複製</button><pre id="codex-039">請審查目前 git diff，優先找 bug、行為回歸、缺少測試、無關修改、風險過大的重構。請依嚴重程度列出 findings。</pre></div><div class="why"><strong>為什麼有效：</strong>把 Codex 切到 code review 模式。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="review"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Review</span><h3>40. PR Review</h3><p>審 Pull Request</p></div><div class="codebox"><button class="copy" data-copy="codex-040">複製</button><pre id="codex-040">請審查這個 PR：[PR 連結]。請檢查正確性、安全性、效能、測試、相容性與可維護性。請先列重大問題，再列小問題。</pre></div><div class="why"><strong>為什麼有效：</strong>要求 findings-first，避免只有摘要。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="review"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Review</span><h3>41. 安全審查</h3><p>登入、API、檔案</p></div><div class="codebox"><button class="copy" data-copy="codex-041">複製</button><pre id="codex-041">請針對這次修改做安全審查：auth bypass、injection、XSS、CSRF、檔案上傳、secret 外洩、權限過寬、錯誤訊息洩漏。只列有證據的風險。</pre></div><div class="why"><strong>為什麼有效：</strong>安全審查需要具體威脅清單。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="review"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Review</span><h3>42. 個資審查</h3><p>學生或使用者資料</p></div><div class="codebox"><button class="copy" data-copy="codex-042">複製</button><pre id="codex-042">請審查此修改是否有個資風險：過度收集、log 敏感資料、匯出、權限、保留期限、第三方傳送。請列出位置與修正建議。</pre></div><div class="why"><strong>為什麼有效：</strong>個資風險常藏在 log 與匯出功能。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="review"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Review</span><h3>43. API 相容性</h3><p>修改資料格式</p></div><div class="codebox"><button class="copy" data-copy="codex-043">複製</button><pre id="codex-043">請檢查這次修改是否破壞 API 相容性：request/response schema、status code、error format、預設值、排序、分頁、舊 client 行為。</pre></div><div class="why"><strong>為什麼有效：</strong>API 破壞不一定會在編譯時出現。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="review"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Review</span><h3>44. 可維護性審查</h3><p>大改後</p></div><div class="codebox"><button class="copy" data-copy="codex-044">複製</button><pre id="codex-044">請審查可維護性：重複邏輯、過度抽象、命名不清、邊界混亂、違反既有 pattern、測試難寫。請提出最小改善建議。</pre></div><div class="why"><strong>為什麼有效：</strong>讓 review 聚焦長期維護成本。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="review"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Review</span><h3>45. UI Review</h3><p>前端介面</p></div><div class="codebox"><button class="copy" data-copy="codex-045">複製</button><pre id="codex-045">請審查 UI：RWD、鍵盤操作、可及性、對比、文字溢出、按鈕尺寸、empty/loading/error 狀態、行動版操作。請列出修正優先順序。</pre></div><div class="why"><strong>為什麼有效：</strong>UI 品質不只看美觀，也看狀態與操作。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="review"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Review</span><h3>46. 差異最小化</h3><p>避免改太多</p></div><div class="codebox"><button class="copy" data-copy="codex-046">複製</button><pre id="codex-046">請檢查 diff 中是否有不必要 churn：格式化噪音、無關 rename、無關重構、排序變更、產生檔案變動。請建議哪些應撤回。</pre></div><div class="why"><strong>為什麼有效：</strong>小 diff 比大 diff 更容易 review 與回滾。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="review"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Review</span><h3>47. 依賴套件審查</h3><p>新增 package 前</p></div><div class="codebox"><button class="copy" data-copy="codex-047">複製</button><pre id="codex-047">請評估是否應新增 [package]。檢查既有替代方案、維護狀態、bundle size、安全風險、授權、是否可用標準函式取代。</pre></div><div class="why"><strong>為什麼有效：</strong>防止為小需求引入大負擔。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="review"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Review</span><h3>48. 可觀測性審查</h3><p>上 production 前</p></div><div class="codebox"><button class="copy" data-copy="codex-048">複製</button><pre id="codex-048">請審查此功能是否有足夠 observability：log、error reporting、metrics、trace context、失敗時是否能診斷。請避免記錄敏感資料。</pre></div><div class="why"><strong>為什麼有效：</strong>能上線不等於出事時能查。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="review"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Review</span><h3>49. 發版風險審查</h3><p>release 前</p></div><div class="codebox"><button class="copy" data-copy="codex-049">複製</button><pre id="codex-049">請審查自 [tag/branch] 以來的變更，整理使用者可見改動、breaking changes、migration 風險、rollback plan、發版前必跑檢查。</pre></div><div class="why"><strong>為什麼有效：</strong>發版審查要看使用者影響與回滾。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="review"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Review</span><h3>50. AI 產出審查</h3><p>Codex 改完後</p></div><div class="codebox"><button class="copy" data-copy="codex-050">複製</button><pre id="codex-050">請以嚴格 review 角度審查你剛完成的修改。找出可能的幻覺、未驗證假設、過度修改、測試不足與應該交給人確認的部分。</pre></div><div class="why"><strong>為什麼有效：</strong>要求 Codex 反向檢查自己的成果。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="debug"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Debug</span><h3>51. Stack trace 診斷</h3><p>有錯誤訊息</p></div><div class="codebox"><button class="copy" data-copy="codex-051">複製</button><pre id="codex-051">以下是錯誤訊息：
+[貼上 stack trace]
+請追到根因，指出哪個值或狀態不符合預期，提出最小修正，並說明如何驗證。</pre></div><div class="why"><strong>為什麼有效：</strong>原始錯誤比轉述更準。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="debug"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Debug</span><h3>52. Build 失敗</h3><p>CI 或本機 build</p></div><div class="codebox"><button class="copy" data-copy="codex-052">複製</button><pre id="codex-052">Build 失敗，log 如下：
+[貼上 log 或 @build.log]
+請找出第一個有意義的錯誤，不要被後續連鎖錯誤帶偏。修正後重新執行相關命令。</pre></div><div class="why"><strong>為什麼有效：</strong>Build log 常有很多衍生錯誤。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="debug"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Debug</span><h3>53. 本機正常線上壞</h3><p>部署差異</p></div><div class="codebox"><button class="copy" data-copy="codex-053">複製</button><pre id="codex-053">這個功能本機正常，但部署後壞掉。請比較 Node/套件版本、build command、env vars、base path、靜態資源、快取、server config，列證據再修。</pre></div><div class="why"><strong>為什麼有效：</strong>環境差異需要系統化比對。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="debug"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Debug</span><h3>54. 403/401 權限錯誤</h3><p>登入或資料庫政策</p></div><div class="codebox"><button class="copy" data-copy="codex-054">複製</button><pre id="codex-054">請診斷這個 401/403 權限錯誤。檢查登入狀態、token/header、role、server guard、CORS、資料庫 policy、前端呼叫位置。先列證據。</pre></div><div class="why"><strong>為什麼有效：</strong>權限錯誤通常跨好幾層。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="debug"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Debug</span><h3>55. CORS 錯誤</h3><p>前後端串接</p></div><div class="codebox"><button class="copy" data-copy="codex-055">複製</button><pre id="codex-055">請診斷 CORS 錯誤。檢查 request origin、method、headers、preflight、server CORS 設定、credentials、proxy 設定。請不要用過度寬鬆的 wildcard 修法。</pre></div><div class="why"><strong>為什麼有效：</strong>CORS 修正不能只求不報錯，也要安全。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="debug"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Debug</span><h3>56. 路徑大小寫問題</h3><p>Windows 可跑、Linux 壞</p></div><div class="codebox"><button class="copy" data-copy="codex-056">複製</button><pre id="codex-056">請檢查路徑與檔名問題：大小寫、空白、中文檔名、相對路徑、import path、asset path、部署輸出。請修正可證實的錯誤。</pre></div><div class="why"><strong>為什麼有效：</strong>跨平台部署常被檔名規則絆倒。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="debug"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Debug</span><h3>57. 非同步競態</h3><p>偶發錯誤</p></div><div class="codebox"><button class="copy" data-copy="codex-057">複製</button><pre id="codex-057">請尋找 [workflow] 的 race condition。追蹤 async call、取消流程、stale state、重試、loading flag、執行順序假設，提出 deterministic fix。</pre></div><div class="why"><strong>為什麼有效：</strong>偶發 bug 常是順序不穩。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="debug"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Debug</span><h3>58. 記憶體或效能退化</h3><p>跑久變慢</p></div><div class="codebox"><button class="copy" data-copy="codex-058">複製</button><pre id="codex-058">請調查 [功能] 跑久後變慢或記憶體增加。檢查 listener、timer、cache、unbounded arrays、re-render、cleanup。提出可量測修正。</pre></div><div class="why"><strong>為什麼有效：</strong>效能退化常是累積問題。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="debug"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Debug</span><h3>59. 資料不一致</h3><p>前後端或 DB 不一致</p></div><div class="codebox"><button class="copy" data-copy="codex-059">複製</button><pre id="codex-059">請調查 [資料] 在 [來源 A] 與 [來源 B] 不一致的原因。追蹤寫入、讀取、快取、同步、排序、時間格式與資料轉換。</pre></div><div class="why"><strong>為什麼有效：</strong>資料問題需要追讀寫全流程。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="debug"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Debug</span><h3>60. 瀏覽器相容</h3><p>某瀏覽器壞掉</p></div><div class="codebox"><button class="copy" data-copy="codex-060">複製</button><pre id="codex-060">請調查 [功能] 在 [瀏覽器/裝置] 壞掉的原因。檢查 API 支援、CSS 支援、事件處理、polyfill、fallback 與行動裝置限制。</pre></div><div class="why"><strong>為什麼有效：</strong>跨瀏覽器問題要查支援差異。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="debug"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Debug</span><h3>61. 測試環境壞掉</h3><p>setup 或 fixture 問題</p></div><div class="codebox"><button class="copy" data-copy="codex-061">複製</button><pre id="codex-061">請診斷測試環境為什麼壞掉。檢查 setup、mock、fixture、測試資料庫、環境變數、清理流程、測試順序。請先列根因候選。</pre></div><div class="why"><strong>為什麼有效：</strong>不是所有測試失敗都來自產品程式。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="debug"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Debug</span><h3>62. GitHub Actions 失敗</h3><p>CI 問題</p></div><div class="codebox"><button class="copy" data-copy="codex-062">複製</button><pre id="codex-062">請診斷 GitHub Actions 失敗。閱讀 workflow、log、runner 環境、cache、secrets、matrix、安裝步驟。提出最小修正並說明本機如何驗證。</pre></div><div class="why"><strong>為什麼有效：</strong>CI 問題常和環境、快取、secret 有關。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="debug"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">Debug</span><h3>63. 套件版本衝突</h3><p>安裝失敗</p></div><div class="codebox"><button class="copy" data-copy="codex-063">複製</button><pre id="codex-063">請診斷 dependency conflict。檢查 package manager、lockfile、peer dependencies、Node 版本、重複套件、可升級或降級方案。避免盲目刪 lockfile。</pre></div><div class="why"><strong>為什麼有效：</strong>保護 lockfile 與版本一致性。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="docs"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">文件</span><h3>64. README 補完</h3><p>專案交接</p></div><div class="codebox"><button class="copy" data-copy="codex-064">複製</button><pre id="codex-064">請更新 README，包含專案用途、安裝、啟動、測試、建置、部署、環境變數、常見問題。請保持精簡、可執行。</pre></div><div class="why"><strong>為什麼有效：</strong>README 的核心是讓人跑起來。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="docs"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">文件</span><h3>65. AGENTS.md 建立</h3><p>讓 Codex 長期遵守規則</p></div><div class="codebox"><button class="copy" data-copy="codex-065">複製</button><pre id="codex-065">請為這個 repo 建立 AGENTS.md，內容包含專案概覽、重要目錄、程式風格、測試命令、建置命令、不要做的事、回報格式與驗證要求。</pre></div><div class="why"><strong>為什麼有效：</strong>把每次都要提醒 Codex 的規則寫進 repo。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="docs"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">文件</span><h3>66. HTML 技術文件</h3><p>生成可分享文件</p></div><div class="codebox"><button class="copy" data-copy="codex-066">複製</button><pre id="codex-066">請把 @notes.md 轉成清爽 RWD HTML 技術文件，包含目錄、重點摘要、流程、架構圖、命令一鍵複製、常見問題與參考資料。</pre></div><div class="why"><strong>為什麼有效：</strong>一次指定輸出格式與文件元件。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="docs"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">文件</span><h3>67. 故障排除文件</h3><p>安裝或部署踩雷後</p></div><div class="codebox"><button class="copy" data-copy="codex-067">複製</button><pre id="codex-067">請把這次排錯整理成 troubleshooting guide：症狀、可能原因、診斷命令、修正步驟、成功驗證、避免再犯。</pre></div><div class="why"><strong>為什麼有效：</strong>把一次排錯變成未來可複用知識。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="docs"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">文件</span><h3>68. SOP 文件</h3><p>把聊天紀錄變流程</p></div><div class="codebox"><button class="copy" data-copy="codex-068">複製</button><pre id="codex-068">請把這段對話或 notes 整理成 SOP。保留最後有效流程，移除無用嘗試，把踩雷點改成警告，加入驗證 checkpoint。</pre></div><div class="why"><strong>為什麼有效：</strong>避免技術文件變成流水帳。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="docs"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">文件</span><h3>69. PR 說明</h3><p>準備提交</p></div><div class="codebox"><button class="copy" data-copy="codex-069">複製</button><pre id="codex-069">請根據目前 diff 產生 PR 說明，包含 Summary、Changes、Test plan、Screenshots、Risk、Rollback、Checklist。不要直接建立 PR。</pre></div><div class="why"><strong>為什麼有效：</strong>PR 說明要包含測試與風險，不只是改了什麼。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="docs"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">文件</span><h3>70. Commit message</h3><p>提交前</p></div><div class="codebox"><button class="copy" data-copy="codex-070">複製</button><pre id="codex-070">請根據 git diff 產生 Conventional Commit message。請判斷 feat/fix/docs/refactor/test/chore 類型，提供一行版與詳細版。不要 commit。</pre></div><div class="why"><strong>為什麼有效：</strong>先產生訊息，保留人工確認。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="docs"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">文件</span><h3>71. Release notes</h3><p>發版</p></div><div class="codebox"><button class="copy" data-copy="codex-071">複製</button><pre id="codex-071">請根據 [tag/branch] 以來的 diff 產生 release notes，分成 Features、Fixes、Breaking changes、Migration notes、Known issues。</pre></div><div class="why"><strong>為什麼有效：</strong>把工程 diff 轉成使用者可讀內容。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="docs"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">文件</span><h3>72. 架構決策紀錄</h3><p>重要技術選擇</p></div><div class="codebox"><button class="copy" data-copy="codex-072">複製</button><pre id="codex-072">請為 [技術決策] 建立 ADR，包含 Context、Options、Decision、Consequences、Risks、Rollback。請用專案既有格式。</pre></div><div class="why"><strong>為什麼有效：</strong>讓未來的人理解當初為何這樣選。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="docs"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">文件</span><h3>73. 文件與程式一致性</h3><p>文件可能過期</p></div><div class="codebox"><button class="copy" data-copy="codex-073">複製</button><pre id="codex-073">請檢查 [文件/資料夾] 是否與目前程式一致。列出過期、缺漏、錯誤指令與需要更新的段落。先不要修改。</pre></div><div class="why"><strong>為什麼有效：</strong>文件維護要先查證再改。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="docs"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">文件</span><h3>74. 雙語技術文件</h3><p>中英對照</p></div><div class="codebox"><button class="copy" data-copy="codex-074">複製</button><pre id="codex-074">請產生繁體中文與英文雙語技術文件。術語請保持一致，用表格整理對照，不要逐字硬翻，保留工程語氣。</pre></div><div class="why"><strong>為什麼有效：</strong>雙語文件重點是術語一致與可讀性。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="docs"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">文件</span><h3>75. 主管摘要</h3><p>非技術溝通</p></div><div class="codebox"><button class="copy" data-copy="codex-075">複製</button><pre id="codex-075">請把這項技術工作整理成給主管看的摘要：目的、效益、風險、成本、時程、需要核准的事項與下一步。</pre></div><div class="why"><strong>為什麼有效：</strong>把技術內容轉成決策語言。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="workflow"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">工作流</span><h3>76. 長任務分階段</h3><p>大型改版</p></div><div class="codebox"><button class="copy" data-copy="codex-076">複製</button><pre id="codex-076">請把這個任務分成四階段：
+1. 理解與盤點
+2. 修改計畫
+3. 實作
+4. 驗證與回報
+每階段完成後先停下來等我確認。</pre></div><div class="why"><strong>為什麼有效：</strong>大型任務需要節點與人工控制。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="workflow"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">工作流</span><h3>77. 完成前證據</h3><p>避免假完成</p></div><div class="codebox"><button class="copy" data-copy="codex-077">複製</button><pre id="codex-077">在你說完成前，請提供證據：
+1. 修改檔案
+2. 執行命令
+3. 測試結果
+4. 未驗證項目
+5. 殘餘風險
+如果沒有驗證，請明確說沒有。</pre></div><div class="why"><strong>為什麼有效：</strong>Codex 的完成回報要能被追蹤。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="workflow"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">工作流</span><h3>78. 多 Agent 分工</h3><p>平行任務</p></div><div class="codebox"><button class="copy" data-copy="codex-078">複製</button><pre id="codex-078">請把這個專案拆成可平行處理的 work packages。每包請列目標、檔案範圍、輸入、輸出、驗證方式、相依順序與可能衝突。</pre></div><div class="why"><strong>為什麼有效：</strong>平行工作要先避免互相踩檔案。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="workflow"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">工作流</span><h3>79. Codex 任務切割</h3><p>要丟到背景跑</p></div><div class="codebox"><button class="copy" data-copy="codex-079">複製</button><pre id="codex-079">請判斷這個需求適合拆成哪些 Codex 背景任務。每個任務必須具體、可驗證、可獨立 review，並列出不適合交給 Codex 的部分。</pre></div><div class="why"><strong>為什麼有效：</strong>Codex 適合明確任務，不適合模糊大包。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="workflow"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">工作流</span><h3>80. AGENTS.md 優化</h3><p>規則太亂</p></div><div class="codebox"><button class="copy" data-copy="codex-080">複製</button><pre id="codex-080">請審查 AGENTS.md 是否太長、矛盾或不夠可執行。請重寫成清楚段落：專案規則、命令、測試、風格、禁止事項、回報格式。</pre></div><div class="why"><strong>為什麼有效：</strong>Codex 規則要可執行，不是願望清單。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="workflow"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">工作流</span><h3>81. 建立 Skill 候選</h3><p>重複任務</p></div><div class="codebox"><button class="copy" data-copy="codex-081">複製</button><pre id="codex-081">請從最近的工作中找出適合變成 Skill 的重複任務。每個候選請列：名稱、觸發時機、輸入、步驟、驗證、輸出格式、風險。</pre></div><div class="why"><strong>為什麼有效：</strong>把一次成功變成可重複流程。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="workflow"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">工作流</span><h3>82. Plugin/Skill 判斷</h3><p>要封裝能力</p></div><div class="codebox"><button class="copy" data-copy="codex-082">複製</button><pre id="codex-082">請判斷這個工作流應該做成 prompt、AGENTS.md、Skill、Plugin、MCP 或 automation。請說明理由、範圍、風險與最小可行做法。</pre></div><div class="why"><strong>為什麼有效：</strong>不同持久化方式適合不同範圍。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="workflow"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">工作流</span><h3>83. 每日工作回報</h3><p>長期專案</p></div><div class="codebox"><button class="copy" data-copy="codex-083">複製</button><pre id="codex-083">請根據 repo 狀態與 notes 產生每日工作回報：完成、進行中、阻塞、決策、風險、明日任務。保持簡潔。</pre></div><div class="why"><strong>為什麼有效：</strong>長期專案需要穩定節奏。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="workflow"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">工作流</span><h3>84. 工作後回顧</h3><p>任務完成後</p></div><div class="codebox"><button class="copy" data-copy="codex-084">複製</button><pre id="codex-084">請做工作後回顧：這次改了什麼、驗證了什麼、沒驗證什麼、踩到什麼雷、下次應該寫進 AGENTS.md 或 Skill 的規則。</pre></div><div class="why"><strong>為什麼有效：</strong>每次任務都沉澱經驗。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="workflow"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">工作流</span><h3>85. 成本與上下文控制</h3><p>大型 repo</p></div><div class="codebox"><button class="copy" data-copy="codex-085">複製</button><pre id="codex-085">請為這個任務設計低上下文成本的工作法：先讀哪些檔案、哪些可以忽略、何時需要搜尋、何時需要分任務、何時停止問我。</pre></div><div class="why"><strong>為什麼有效：</strong>大型 repo 要管理上下文，不是全讀。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="workflow"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">工作流</span><h3>86. 自動化邊界</h3><p>例行任務</p></div><div class="codebox"><button class="copy" data-copy="codex-086">複製</button><pre id="codex-086">請分析 [例行任務] 哪些部分可安全自動化，哪些必須人工確認。請提出 script、Skill、automation 或 checklist 的選擇。</pre></div><div class="why"><strong>為什麼有效：</strong>自動化要先定義邊界。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="workflow"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">工作流</span><h3>87. 風險分級修復</h3><p>問題很多時</p></div><div class="codebox"><button class="copy" data-copy="codex-087">複製</button><pre id="codex-087">請把這些問題分成 must-fix、should-fix、later。每項列影響、修復成本、驗證方式、建議順序。不要一次全部改。</pre></div><div class="why"><strong>為什麼有效：</strong>避免問題清單變成失控大改。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="workflow"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">工作流</span><h3>88. Prompt 模板化</h3><p>把好指令變模板</p></div><div class="codebox"><button class="copy" data-copy="codex-088">複製</button><pre id="codex-088">請把這段 prompt 改寫成可重複模板。請標出變數、必要上下文、限制條件、預期輸出、驗證步驟與不該做的事。</pre></div><div class="why"><strong>為什麼有效：</strong>模板比單次 prompt 更能傳給團隊。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="education"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">教育</span><h3>89. 自然教材互動頁</h3><p>教材網站</p></div><div class="codebox"><button class="copy" data-copy="codex-089">複製</button><pre id="codex-089">請根據 @lesson.md 製作一頁國小自然科 RWD 互動教材，包含概念引導、操作區、觀察紀錄、教師導學提示、學習單下載區。</pre></div><div class="why"><strong>為什麼有效：</strong>直接對應你的教材開發流程。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="education"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">教育</span><h3>90. 科展資料分析</h3><p>學生研究</p></div><div class="codebox"><button class="copy" data-copy="codex-090">複製</button><pre id="codex-090">請讀取 @data.csv，分析科展資料：變項、樣本數、描述統計、適合圖表、可能結論、限制、下一步實驗。用國小學生能理解的語氣。</pre></div><div class="why"><strong>為什麼有效：</strong>兼顧科學分析與學生理解。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="education"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">教育</span><h3>91. 學習單生成</h3><p>40 分鐘探究課</p></div><div class="codebox"><button class="copy" data-copy="codex-091">複製</button><pre id="codex-091">請根據這個活動設計一份國小自然探究學習單，包含問題、預測、材料、步驟、觀察紀錄、結果解釋、反思。語氣適合學生。</pre></div><div class="why"><strong>為什麼有效：</strong>探究課需要學生可操作的紀錄結構。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="education"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">教育</span><h3>92. Rubric 量規</h3><p>素養評量</p></div><div class="codebox"><button class="copy" data-copy="codex-092">複製</button><pre id="codex-092">請為 [活動/作品] 設計 Rubric，分成 4 個等級，評量面向包含科學概念、探究歷程、合作溝通、資料表達與反思修正。</pre></div><div class="why"><strong>為什麼有效：</strong>讓作品評量更具體。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="education"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">教育</span><h3>93. 108 課綱對應</h3><p>教案文件</p></div><div class="codebox"><button class="copy" data-copy="codex-093">複製</button><pre id="codex-093">請將這份自然課活動對應 108 課綱，列出核心素養、學習表現、學習內容、學習目標、評量方式與差異化支持。</pre></div><div class="why"><strong>為什麼有效：</strong>符合你常用的教案格式。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="education"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">教育</span><h3>94. 研習講義</h3><p>教師增能</p></div><div class="codebox"><button class="copy" data-copy="codex-094">複製</button><pre id="codex-094">請把 @notes.md 轉成教師研習講義，包含目標、流程、講師提示、實作任務、討論問題、延伸應用與可一鍵複製 prompt。</pre></div><div class="why"><strong>為什麼有效：</strong>研習講義要讓老師能帶走使用。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="education"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">教育</span><h3>95. 教材網站健檢</h3><p>Science Portal 類網站</p></div><div class="codebox"><button class="copy" data-copy="codex-095">複製</button><pre id="codex-095">請檢查這個教材網站 repo：首頁導覽、教材分類、RWD、連結失效、圖片路徑、GitHub Pages 部署、可讀性、教師使用流程。列出優先修正清單。</pre></div><div class="why"><strong>為什麼有效：</strong>針對教材網站的真實維護需求。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="education"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">教育</span><h3>96. HTML 技術文章教學版</h3><p>給教師閱讀</p></div><div class="codebox"><button class="copy" data-copy="codex-096">複製</button><pre id="codex-096">請將這份技術內容改寫成教師看得懂的 HTML 技術文章。保留必要術語，但每個術語都要有白話說明、範例與教學應用。</pre></div><div class="why"><strong>為什麼有效：</strong>把工程概念轉譯成教師可用語言。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="education"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">教育</span><h3>97. 科普繪本章節</h3><p>自然科學百科</p></div><div class="codebox"><button class="copy" data-copy="codex-097">複製</button><pre id="codex-097">請根據 [自然主題] 產生國小到國中可讀的科普繪本章節，包含故事開場、核心概念、生活例子、插圖描述、實驗活動與延伸問題。</pre></div><div class="why"><strong>為什麼有效：</strong>支援你的自然科學繪本百科方向。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="education"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">教育</span><h3>98. 命題審查</h3><p>試卷或題庫</p></div><div class="codebox"><button class="copy" data-copy="codex-098">複製</button><pre id="codex-098">請審查這份自然科試題：概念是否重複、選項是否有誘答、題幹是否清楚、是否符合年級、是否有超綱、圖文是否一致。請提出修正。</pre></div><div class="why"><strong>為什麼有效：</strong>對應自然科命題與審題工作。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="education"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">教育</span><h3>99. 學生資料匿名化</h3><p>文件公開前</p></div><div class="codebox"><button class="copy" data-copy="codex-099">複製</button><pre id="codex-099">請檢查這份文件是否含學生個資，並提出匿名化建議。學生姓名請改成中間字全形Ｏ，保留可讀性，避免暴露班級、座號、聯絡資訊。</pre></div><div class="why"><strong>為什麼有效：</strong>符合學生資料處理需求。</div></article>
+<article class="prompt-card" data-agent="codex" data-cat="education"><div class="prompt-head"><span class="agent-label">Codex</span><span class="tag">教育</span><h3>100. 教材 Prompt Library 內部化</h3><p>建立個人工作流</p></div><div class="codebox"><button class="copy" data-copy="codex-100">複製</button><pre id="codex-100">請把我常用的教材開發、科展指導、HTML 技術文件、研習講義、命題審查 prompt 整理成個人 Prompt Library。請分類、加使用情境、輸出格式與可轉成 Skill 的候選。</pre></div><div class="why"><strong>為什麼有效：</strong>把零散 prompt 變成黑熊老師自己的工作系統。</div></article>
+</div>
+</section>
+<section id="hermes" class="agent-section">
+<h2>Hermes Agent：100 個 Prompt</h2>
+<p>適合 CLI/Desktop/Gateway/Skills/Memory、自動化、長期工作流與教育任務。</p>
+<div class="prompt-list">
+<article class="prompt-card" data-agent="hermes" data-cat="setup"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">安裝診斷</span><h3>1. Hermes 安裝健檢</h3><p>第一次安裝後</p></div><div class="codebox"><button class="copy" data-copy="hermes-001">複製</button><pre id="hermes-001">請先不要重裝 Hermes。請執行安裝健檢：確認 hermes 指令是否在 PATH、版本、Python/Node 依賴、設定檔位置、provider 設定、API key 狀態。請列出診斷命令、結果與下一步。</pre></div><div class="why"><strong>為什麼有效：</strong>先診斷再修復，避免反覆重裝造成更多混亂。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="setup"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">安裝診斷</span><h3>2. hermes doctor 解讀</h3><p>doctor 有錯誤時</p></div><div class="codebox"><button class="copy" data-copy="hermes-002">複製</button><pre id="hermes-002">我會貼上 hermes doctor 的輸出。請逐項解讀每個警告或錯誤，分成 must-fix、should-fix、can-ignore，並提供最小修正命令與成功驗證方式。</pre></div><div class="why"><strong>為什麼有效：</strong>把診斷輸出轉成可執行修復清單。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="setup"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">安裝診斷</span><h3>3. command not found</h3><p>找不到 hermes 指令</p></div><div class="codebox"><button class="copy" data-copy="hermes-003">複製</button><pre id="hermes-003">Hermes 顯示 command not found。請檢查安裝路徑、PATH、shell profile、WSL/Windows 環境差異。請先列診斷命令，再給修正步驟，不要直接重裝。</pre></div><div class="why"><strong>為什麼有效：</strong>PATH 問題通常不需要完整重裝。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="setup"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">安裝診斷</span><h3>4. Provider 設定檢查</h3><p>模型或 API key 不能用</p></div><div class="codebox"><button class="copy" data-copy="hermes-004">複製</button><pre id="hermes-004">請檢查 Hermes provider 設定。確認目前使用哪個 provider、模型名稱、API key 讀取位置、config 與 .env 是否一致。不要顯示完整 key，只回報遮罩後的狀態。</pre></div><div class="why"><strong>為什麼有效：</strong>保護金鑰，同時確認設定來源。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="setup"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">安裝診斷</span><h3>5. Windows/WSL 設定盤點</h3><p>Windows 安裝</p></div><div class="codebox"><button class="copy" data-copy="hermes-005">複製</button><pre id="hermes-005">請檢查我目前是在 Windows、PowerShell、WSL 還是 Ubuntu 裡執行 Hermes。請整理各環境的 hermes 路徑、設定檔位置、桌面版啟動方式與可能衝突。</pre></div><div class="why"><strong>為什麼有效：</strong>Windows 與 WSL 常會有兩套路徑與設定。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="setup"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">安裝診斷</span><h3>6. Hermes 更新前備份</h3><p>update 前</p></div><div class="codebox"><button class="copy" data-copy="hermes-006">複製</button><pre id="hermes-006">在執行 hermes update 前，請先幫我列出應備份的設定：config、.env、auth、skills、memory、gateway 設定。請提供備份命令與還原方式。</pre></div><div class="why"><strong>為什麼有效：</strong>更新前先保護設定與技能資料。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="setup"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">安裝診斷</span><h3>7. 安裝錯誤排除</h3><p>貼上錯誤訊息</p></div><div class="codebox"><button class="copy" data-copy="hermes-007">複製</button><pre id="hermes-007">以下是 Hermes 安裝錯誤：
+[貼上錯誤訊息]
+請先判斷錯誤類型：權限、網路、依賴、PATH、版本、provider。請給我最小修復步驟與驗證命令。</pre></div><div class="why"><strong>為什麼有效：</strong>用錯誤類型導向修復，不盲目嘗試。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="setup"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">安裝診斷</span><h3>8. 設定檔位置確認</h3><p>Desktop/CLI 不同步</p></div><div class="codebox"><button class="copy" data-copy="hermes-008">複製</button><pre id="hermes-008">請確認 Hermes CLI、Desktop、Gateway 是否讀取同一組設定。請列出各自可能的 config、.env、auth、skills、memory 路徑，並建議如何統一。</pre></div><div class="why"><strong>為什麼有效：</strong>設定不同步常是多介面使用的主因。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="setup"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">安裝診斷</span><h3>9. 桌面捷徑建立</h3><p>Windows 桌面捷徑</p></div><div class="codebox"><button class="copy" data-copy="hermes-009">複製</button><pre id="hermes-009">請幫我找出 Hermes Desktop 的主程式或啟動命令，建立桌面捷徑，並確認圖示、起始目錄與工作目錄正確。執行前請先列計畫。</pre></div><div class="why"><strong>為什麼有效：</strong>捷徑的起始目錄會影響 Hermes 工作範圍。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="setup"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">安裝診斷</span><h3>10. 安裝技術文件生成</h3><p>成功安裝後</p></div><div class="codebox"><button class="copy" data-copy="hermes-010">複製</button><pre id="hermes-010">請把這次 Hermes 安裝過程整理成 HTML 技術文件，包含環境、踩雷、錯誤訊息、修復步驟、成功驗證、一鍵複製命令與日後維護建議。</pre></div><div class="why"><strong>為什麼有效：</strong>把一次安裝經驗變成可重複 SOP。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="cli"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">CLI/TUI</span><h3>11. CLI 啟動檢查</h3><p>進入互動模式</p></div><div class="codebox"><button class="copy" data-copy="hermes-011">複製</button><pre id="hermes-011">請確認 Hermes CLI 是否能正常啟動互動模式。請檢查目前工作目錄、可用工具、已載入 skills、active provider、active model，並回報是否適合開始任務。</pre></div><div class="why"><strong>為什麼有效：</strong>開始任務前先確認上下文與工具狀態。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="cli"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">CLI/TUI</span><h3>12. 單次查詢模式</h3><p>非互動任務</p></div><div class="codebox"><button class="copy" data-copy="hermes-012">複製</button><pre id="hermes-012">請用 Hermes 的單次查詢模式完成這個低風險任務：[任務]。請不要進入長對話，輸出結果、使用的工具、是否需要後續人工確認。</pre></div><div class="why"><strong>為什麼有效：</strong>簡單任務適合一次性執行，避免上下文膨脹。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="cli"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">CLI/TUI</span><h3>13. 指定工作目錄</h3><p>避免跑到 home folder</p></div><div class="codebox"><button class="copy" data-copy="hermes-013">複製</button><pre id="hermes-013">在開始前，請確認目前工作目錄是否為：[專案路徑]。若不是，請先停止並告訴我如何從正確目錄啟動 Hermes，不要讀取 home folder 下的無關資料。</pre></div><div class="why"><strong>為什麼有效：</strong>Hermes Desktop/CLI 工作目錄錯誤會造成安全與混亂。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="cli"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">CLI/TUI</span><h3>14. 指定工具集</h3><p>限制工具權限</p></div><div class="codebox"><button class="copy" data-copy="hermes-014">複製</button><pre id="hermes-014">這次任務只允許使用 [web/terminal/skills/files] 這些工具。請不要使用其他工具；若需要額外權限，先說明原因與風險，等我確認。</pre></div><div class="why"><strong>為什麼有效：</strong>用工具集控制代理行為邊界。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="cli"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">CLI/TUI</span><h3>15. 指定模型與 provider</h3><p>不同任務切模型</p></div><div class="codebox"><button class="copy" data-copy="hermes-015">複製</button><pre id="hermes-015">請先判斷這個任務適合使用哪個 provider 與 model。請說明理由：速度、成本、推理能力、工具使用、隱私。不要自行切換，等我確認。</pre></div><div class="why"><strong>為什麼有效：</strong>把模型選擇變成可解釋決策。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="cli"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">CLI/TUI</span><h3>16. 中斷與改道</h3><p>任務跑偏時</p></div><div class="codebox"><button class="copy" data-copy="hermes-016">複製</button><pre id="hermes-016">你目前的方向跑偏了。請停止目前執行，回顧已做的事，列出可保留成果，然後依照新目標重新規劃：[新目標]。不要繼續原路徑。</pre></div><div class="why"><strong>為什麼有效：</strong>長任務需要明確中斷與重新定向。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="cli"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">CLI/TUI</span><h3>17. TUI 操作說明</h3><p>給新手</p></div><div class="codebox"><button class="copy" data-copy="hermes-017">複製</button><pre id="hermes-017">請用新手能懂的方式說明 Hermes CLI/TUI 的常用操作：啟動、輸入多行、查看歷史、中斷、指定 skill、指定 provider、結束 session。</pre></div><div class="why"><strong>為什麼有效：</strong>降低 CLI 介面的上手門檻。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="cli"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">CLI/TUI</span><h3>18. CLI Cheatsheet</h3><p>產生命令速查</p></div><div class="codebox"><button class="copy" data-copy="hermes-018">複製</button><pre id="hermes-018">請根據我目前的 Hermes 安裝狀態，整理一份 CLI cheatsheet，包含 setup、doctor、update、config、skills、gateway、desktop、常用 chat 命令。</pre></div><div class="why"><strong>為什麼有效：</strong>把常用命令集中成可查表。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="cli"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">CLI/TUI</span><h3>19. CLI 與 Desktop 對照</h3><p>不知道用哪個介面</p></div><div class="codebox"><button class="copy" data-copy="hermes-019">複製</button><pre id="hermes-019">請比較這個任務適合用 Hermes CLI、TUI、Desktop、Dashboard 還是 Gateway。請以任務類型、風險、可視化需求、是否長期執行來判斷。</pre></div><div class="why"><strong>為什麼有效：</strong>不同介面適合不同工作情境。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="cli"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">CLI/TUI</span><h3>20. Session 摘要</h3><p>結束前</p></div><div class="codebox"><button class="copy" data-copy="hermes-020">複製</button><pre id="hermes-020">請在結束這個 Hermes session 前，整理工作摘要：完成項目、未完成項目、產出檔案、使用工具、重要記憶、下次可接續的 prompt。</pre></div><div class="why"><strong>為什麼有效：</strong>方便跨 session 接續工作。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="desktop"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Desktop</span><h3>21. Desktop 啟動診斷</h3><p>桌面版打不開</p></div><div class="codebox"><button class="copy" data-copy="hermes-021">複製</button><pre id="hermes-021">Hermes Desktop 無法啟動或閃退。請檢查主程式路徑、啟動命令、設定檔、log、權限、殘留程序。請先列診斷步驟，不要直接重裝。</pre></div><div class="why"><strong>為什麼有效：</strong>桌面版問題常是程序或設定衝突。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="desktop"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Desktop</span><h3>22. Desktop 工作目錄</h3><p>讀到錯誤資料夾</p></div><div class="codebox"><button class="copy" data-copy="hermes-022">複製</button><pre id="hermes-022">請確認 Hermes Desktop 目前使用的工作目錄。若它在 home folder 而不是專案資料夾，請提供安全修正方式，避免讀取無關或敏感檔案。</pre></div><div class="why"><strong>為什麼有效：</strong>工作目錄錯誤是桌面代理常見風險。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="desktop"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Desktop</span><h3>23. Desktop/CLI 設定同步</h3><p>兩邊行為不同</p></div><div class="codebox"><button class="copy" data-copy="hermes-023">複製</button><pre id="hermes-023">Hermes Desktop 和 CLI 行為不同。請比較兩邊的 provider、model、config、skills、memory、tool 設定。請找出不同步來源並提供修正方案。</pre></div><div class="why"><strong>為什麼有效：</strong>同一核心不同介面時，設定同步是關鍵。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="desktop"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Desktop</span><h3>24. Desktop UI 導覽</h3><p>第一次使用桌面版</p></div><div class="codebox"><button class="copy" data-copy="hermes-024">複製</button><pre id="hermes-024">請用教學文件方式說明 Hermes Desktop：chat、settings、skills、memory、tool calls、files、sessions、gateway 的用途與推薦使用流程。</pre></div><div class="why"><strong>為什麼有效：</strong>桌面版讓代理工作更可視化。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="desktop"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Desktop</span><h3>25. 桌面版權限邊界</h3><p>避免過度授權</p></div><div class="codebox"><button class="copy" data-copy="hermes-025">複製</button><pre id="hermes-025">請幫我為 Hermes Desktop 設計安全使用邊界：哪些資料夾可讀、哪些不可讀、哪些操作需確認、是否允許網路、是否允許修改檔案。</pre></div><div class="why"><strong>為什麼有效：</strong>桌面代理權限要像新同事一樣逐步開放。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="desktop"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Desktop</span><h3>26. 桌面版長任務監控</h3><p>背景工作</p></div><div class="codebox"><button class="copy" data-copy="hermes-026">複製</button><pre id="hermes-026">請為這個 Hermes Desktop 長任務建立監控格式：目前狀態、已完成、等待輸入、卡住點、最近工具輸出、下一步、是否需要人工介入。</pre></div><div class="why"><strong>為什麼有效：</strong>長任務需要狀態儀表板式回報。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="desktop"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Desktop</span><h3>27. Desktop 輸出檔檢查</h3><p>產出文件後</p></div><div class="codebox"><button class="copy" data-copy="hermes-027">複製</button><pre id="hermes-027">請檢查 Hermes Desktop 產出的檔案是否存在、路徑是否正確、內容是否完整、是否能用一般瀏覽器或 Office 開啟，並提供檔案清單。</pre></div><div class="why"><strong>為什麼有效：</strong>避免產出在錯誤位置或檔案壞掉。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="desktop"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Desktop</span><h3>28. Desktop 快取與舊版問題</h3><p>看到舊內容</p></div><div class="codebox"><button class="copy" data-copy="hermes-028">複製</button><pre id="hermes-028">我在 Hermes Desktop 看到舊內容或舊設定。請檢查是否是快取、session、工作目錄、設定檔或多版本安裝造成。請提供安全清理步驟。</pre></div><div class="why"><strong>為什麼有效：</strong>避免誤以為修改沒生效。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="desktop"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Desktop</span><h3>29. Desktop 教學截圖規劃</h3><p>寫教學文件</p></div><div class="codebox"><button class="copy" data-copy="hermes-029">複製</button><pre id="hermes-029">請規劃一份 Hermes Desktop 教學文件需要的截圖清單：安裝、登入、provider 設定、skills、memory、啟動任務、檢查輸出、排錯。</pre></div><div class="why"><strong>為什麼有效：</strong>技術教學需要截圖節點。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="desktop"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Desktop</span><h3>30. Desktop 與 n8n/MCP 整合規劃</h3><p>自動化工作台</p></div><div class="codebox"><button class="copy" data-copy="hermes-030">複製</button><pre id="hermes-030">請規劃 Hermes Desktop 與 n8n/MCP 的整合架構。請列出資料流、觸發方式、權限邊界、失敗處理、人工確認點與適合先做的低風險流程。</pre></div><div class="why"><strong>為什麼有效：</strong>整合前先設計安全架構。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="skills"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Skills</span><h3>31. Skills 盤點</h3><p>查看已安裝能力</p></div><div class="codebox"><button class="copy" data-copy="hermes-031">複製</button><pre id="hermes-031">請列出目前 Hermes 已安裝 skills，依用途分類：coding、docs、web、data、ops、research、education。請標示哪些我可能常用，哪些可能有風險。</pre></div><div class="why"><strong>為什麼有效：</strong>先知道工具箱裡有什麼。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="skills"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Skills</span><h3>32. Skill 安裝建議</h3><p>想擴充能力</p></div><div class="codebox"><button class="copy" data-copy="hermes-032">複製</button><pre id="hermes-032">根據我的工作：自然教材、HTML 技術文件、科展資料、GitHub Pages、安裝排錯，請推薦適合 Hermes 安裝的 skills，並說明用途與風險。</pre></div><div class="why"><strong>為什麼有效：</strong>按工作流選 skill，而不是看到就裝。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="skills"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Skills</span><h3>33. Skill 風險審查</h3><p>安裝前</p></div><div class="codebox"><button class="copy" data-copy="hermes-033">複製</button><pre id="hermes-033">請在安裝 [skill name] 前做風險審查：它需要哪些權限、會讀寫什麼、是否連網、是否執行 shell、是否適合 read-only 試跑。</pre></div><div class="why"><strong>為什麼有效：</strong>Skill 是能力也是風險來源。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="skills"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Skills</span><h3>34. 產生自訂 Skill</h3><p>重複工作流</p></div><div class="codebox"><button class="copy" data-copy="hermes-034">複製</button><pre id="hermes-034">請把這個重複工作流設計成 Hermes custom skill。請產生 skill 名稱、用途、觸發時機、輸入參數、步驟、驗證、輸出格式與安全限制。</pre></div><div class="why"><strong>為什麼有效：</strong>把經驗變成可重複能力。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="skills"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Skills</span><h3>35. Skill 改寫成教師版</h3><p>教育工作流</p></div><div class="codebox"><button class="copy" data-copy="hermes-035">複製</button><pre id="hermes-035">請把這個 Hermes skill 改寫成適合國小自然教師使用的版本。輸出要包含教學任務、步驟、範例 prompt、產出格式、注意事項。</pre></div><div class="why"><strong>為什麼有效：</strong>讓工程 skill 變成教師可用流程。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="skills"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Skills</span><h3>36. Skill 使用紀錄回顧</h3><p>使用一段時間後</p></div><div class="codebox"><button class="copy" data-copy="hermes-036">複製</button><pre id="hermes-036">請回顧最近使用 skills 的紀錄，找出成功率高、常失敗、需要修改、值得合併、應該停用的 skills，並提出整理建議。</pre></div><div class="why"><strong>為什麼有效：</strong>Skill 系統需要定期整理。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="skills"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Skills</span><h3>37. Skill 轉 SOP</h3><p>分享給人類</p></div><div class="codebox"><button class="copy" data-copy="hermes-037">複製</button><pre id="hermes-037">請把這個 Hermes skill 的流程轉成給人類看的 SOP，包含適用情境、步驟、命令、檢查點、常見錯誤與修復方式。</pre></div><div class="why"><strong>為什麼有效：</strong>Skill 也應該能被人理解與維護。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="skills"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Skills</span><h3>38. Skill 最小測試</h3><p>自訂 skill 後</p></div><div class="codebox"><button class="copy" data-copy="hermes-038">複製</button><pre id="hermes-038">請為這個自訂 Hermes skill 設計最小測試案例：正常輸入、缺少輸入、錯誤資料、權限不足、輸出格式驗證。請先不要跑高風險動作。</pre></div><div class="why"><strong>為什麼有效：</strong>Skill 需要像程式一樣測試。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="skills"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Skills</span><h3>39. Skill 命名整理</h3><p>Skill 太多時</p></div><div class="codebox"><button class="copy" data-copy="hermes-039">複製</button><pre id="hermes-039">請幫我整理 Hermes skills 命名規則，依工作類型分類並建議重新命名，讓我能快速找到：安裝排錯、文件生成、教材開發、科展分析、網站部署。</pre></div><div class="why"><strong>為什麼有效：</strong>命名是長期使用 skill 的關鍵。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="skills"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Skills</span><h3>40. Skill Library 內部化</h3><p>建立個人能力庫</p></div><div class="codebox"><button class="copy" data-copy="hermes-040">複製</button><pre id="hermes-040">請幫我建立「黑熊老師 Hermes Skill Library」規劃，分類包含教材、科展、HTML 技術文件、安裝排錯、GitHub Pages、研習講義，並列優先開發順序。</pre></div><div class="why"><strong>為什麼有效：</strong>把 Hermes 變成個人工作流系統。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="memory"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Memory</span><h3>41. 記憶盤點</h3><p>確認 Hermes 記得什麼</p></div><div class="codebox"><button class="copy" data-copy="hermes-041">複製</button><pre id="hermes-041">請整理你目前對我的長期記憶，分成工作角色、偏好格式、常用工具、正在進行的專案、不要記錯的地方。請標示哪些需要我確認。</pre></div><div class="why"><strong>為什麼有效：</strong>先確認記憶品質，避免錯誤延續。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="memory"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Memory</span><h3>42. 記憶修正</h3><p>Hermes 記錯時</p></div><div class="codebox"><button class="copy" data-copy="hermes-042">複製</button><pre id="hermes-042">你剛剛的記憶有錯。請不要延續錯誤，請把正確版本整理成可更新記憶的條目，並列出應刪除或覆蓋的舊記憶。</pre></div><div class="why"><strong>為什麼有效：</strong>自學習代理要能修正記憶。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="memory"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Memory</span><h3>43. 專案記憶建立</h3><p>長期專案開始</p></div><div class="codebox"><button class="copy" data-copy="hermes-043">複製</button><pre id="hermes-043">請為這個專案建立 Hermes 專案記憶：目標、資料夾、常用命令、輸出格式、已知限制、不要碰的檔案、下次接續方式。</pre></div><div class="why"><strong>為什麼有效：</strong>專案記憶能降低每次重新說明成本。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="memory"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Memory</span><h3>44. 任務後記憶沉澱</h3><p>完成工作後</p></div><div class="codebox"><button class="copy" data-copy="hermes-044">複製</button><pre id="hermes-044">請從這次任務萃取值得長期記住的內容：成功流程、踩雷、偏好格式、常用命令、下次不要再犯的錯。不要記錄敏感資訊。</pre></div><div class="why"><strong>為什麼有效：</strong>把經驗轉成可重用記憶。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="memory"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Memory</span><h3>45. 記憶安全審查</h3><p>避免記住敏感資訊</p></div><div class="codebox"><button class="copy" data-copy="hermes-045">複製</button><pre id="hermes-045">請審查這段內容是否適合寫入 Hermes memory。請排除 API key、密碼、學生個資、私人路徑、未公開資料，只保留可長期使用的工作偏好。</pre></div><div class="why"><strong>為什麼有效：</strong>記憶越強，越需要資料邊界。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="memory"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Memory</span><h3>46. 個人寫作風格</h3><p>固定語氣</p></div><div class="codebox"><button class="copy" data-copy="hermes-046">複製</button><pre id="hermes-046">請根據我提供的文章，萃取我的寫作風格記憶：語氣、句型、常用比喻、避免用語、適合教師讀者的表達方式。不要過度模仿個資。</pre></div><div class="why"><strong>為什麼有效：</strong>讓 Hermes 更符合個人輸出風格。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="memory"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Memory</span><h3>47. 工作偏好記憶</h3><p>格式偏好</p></div><div class="codebox"><button class="copy" data-copy="hermes-047">複製</button><pre id="hermes-047">請記住我的文件偏好：繁體中文、HTML 技術文件、RWD、一鍵複製、清楚章節、必要時產生 DOCX/PDF、學生姓名中間字改全形Ｏ。</pre></div><div class="why"><strong>為什麼有效：</strong>把固定格式要求變成長期偏好。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="memory"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Memory</span><h3>48. 記憶過期檢查</h3><p>資訊可能變動</p></div><div class="codebox"><button class="copy" data-copy="hermes-048">複製</button><pre id="hermes-048">請檢查你準備使用的記憶是否可能過期。若涉及版本、價格、比賽時程、工具功能、安裝方式，請先查證最新資料再回答。</pre></div><div class="why"><strong>為什麼有效：</strong>長期記憶不能取代最新查證。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="memory"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Memory</span><h3>49. 記憶摘要匯出</h3><p>餵給其他 Agent</p></div><div class="codebox"><button class="copy" data-copy="hermes-049">複製</button><pre id="hermes-049">請把與這個專案有關的 Hermes memory 匯出成 Markdown 摘要，分成背景、決策、檔案、命令、偏好、待辦與風險，方便餵給其他 AI agent。</pre></div><div class="why"><strong>為什麼有效：</strong>支援跨 Agent 協作。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="memory"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Memory</span><h3>50. 記憶清理計畫</h3><p>記憶太亂時</p></div><div class="codebox"><button class="copy" data-copy="hermes-050">複製</button><pre id="hermes-050">請幫我設計 Hermes memory 清理計畫：哪些該保留、合併、刪除、改寫、標註日期。請先輸出建議，不要直接刪除。</pre></div><div class="why"><strong>為什麼有效：</strong>記憶管理需要可審核流程。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="gateway"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Gateway</span><h3>51. Gateway 啟動檢查</h3><p>多平台整合前</p></div><div class="codebox"><button class="copy" data-copy="hermes-051">複製</button><pre id="hermes-051">請檢查 Hermes Gateway 是否適合啟動。確認設定檔、連接平台、token、安全權限、log、失敗重試與停止方式。不要啟動高風險寫入動作。</pre></div><div class="why"><strong>為什麼有效：</strong>Gateway 會把代理接到真實通訊管道，需先審查。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="gateway"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Gateway</span><h3>52. Telegram Bot 設定</h3><p>訊息整合</p></div><div class="codebox"><button class="copy" data-copy="hermes-052">複製</button><pre id="hermes-052">請協助檢查 Hermes Telegram bot 設定。請確認 token 讀取位置、bot 是否回應、允許的 chat/user、指令權限、log 與關閉方式。不要顯示完整 token。</pre></div><div class="why"><strong>為什麼有效：</strong>訊息平台 token 要遮罩並限制使用者。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="gateway"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Gateway</span><h3>53. Discord/Slack 權限</h3><p>團隊聊天</p></div><div class="codebox"><button class="copy" data-copy="hermes-053">複製</button><pre id="hermes-053">請為 Hermes 連接 Discord/Slack 設計權限邊界：可讀哪些頻道、可否發訊息、可否執行工具、哪些關鍵字需要人工確認。</pre></div><div class="why"><strong>為什麼有效：</strong>團隊平台的讀寫權限要分開控制。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="gateway"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Gateway</span><h3>54. 排程任務建立</h3><p>定期報告</p></div><div class="codebox"><button class="copy" data-copy="hermes-054">複製</button><pre id="hermes-054">請幫我設計 Hermes 排程任務：[任務內容]。請列出頻率、資料來源、輸出位置、失敗通知、人工確認點、停止與修改方式。</pre></div><div class="why"><strong>為什麼有效：</strong>自動化任務要有停止與失敗處理。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="gateway"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Gateway</span><h3>55. 長期 Worker 狀態回報</h3><p>背景工作</p></div><div class="codebox"><button class="copy" data-copy="hermes-055">複製</button><pre id="hermes-055">請為 Hermes 長期背景任務建立狀態回報格式：running/waiting/stuck/done，需要輸入、最後工具輸出、已完成步驟、下一步、是否可安全停止。</pre></div><div class="why"><strong>為什麼有效：</strong>長期工作者需要可觀測性。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="gateway"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Gateway</span><h3>56. 自動回覆安全規則</h3><p>訊息代理</p></div><div class="codebox"><button class="copy" data-copy="hermes-056">複製</button><pre id="hermes-056">請設計 Hermes 自動回覆規則：哪些訊息可自動回、哪些只草稿、哪些不可回、哪些含個資或金錢需要人工確認。</pre></div><div class="why"><strong>為什麼有效：</strong>自動回覆要保留人類把關。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="gateway"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Gateway</span><h3>57. Email 摘要任務</h3><p>信件整理</p></div><div class="codebox"><button class="copy" data-copy="hermes-057">複製</button><pre id="hermes-057">請幫我設計 Hermes 每日 email 摘要流程：搜尋範圍、重要性判斷、需要回覆、等待他人、FYI、草稿規則與禁止寄出規則。</pre></div><div class="why"><strong>為什麼有效：</strong>Email 自動化應先摘要與草稿，不直接寄出。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="gateway"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Gateway</span><h3>58. Calendar 簡報任務</h3><p>每日行程</p></div><div class="codebox"><button class="copy" data-copy="hermes-058">複製</button><pre id="hermes-058">請設計 Hermes 每日行程簡報任務：讀取日曆、列出會議、衝突、準備事項、空檔、需提醒事項。不要建立或刪除事件，除非我確認。</pre></div><div class="why"><strong>為什麼有效：</strong>日曆自動化先讀取，不急著改動。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="gateway"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Gateway</span><h3>59. n8n 工作流觸發</h3><p>流程自動化</p></div><div class="codebox"><button class="copy" data-copy="hermes-059">複製</button><pre id="hermes-059">請規劃 Hermes 觸發 n8n workflow 的方式，包含輸入 payload、驗證、失敗重試、權限、log、人工確認與回滾。先做 read-only 測試。</pre></div><div class="why"><strong>為什麼有效：</strong>把代理與自動化平台連接前先設計契約。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="gateway"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Gateway</span><h3>60. Gateway 故障排除</h3><p>訊息不回應</p></div><div class="codebox"><button class="copy" data-copy="hermes-060">複製</button><pre id="hermes-060">Hermes Gateway 沒有回應訊息。請檢查程序是否運行、token、webhook/polling、網路、log、平台權限、設定檔同步與最近變更。</pre></div><div class="why"><strong>為什麼有效：</strong>Gateway 問題常跨平台與本機設定。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="coding"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Coding</span><h3>61. Repo 導覽</h3><p>把 Hermes 當 coding agent</p></div><div class="codebox"><button class="copy" data-copy="hermes-061">複製</button><pre id="hermes-061">請先不要修改檔案。請掃描這個 repo，整理架構、主要目錄、入口、測試命令、部署方式、風險與你建議先讀的檔案。</pre></div><div class="why"><strong>為什麼有效：</strong> coding 任務先理解 repo。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="coding"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Coding</span><h3>62. 小修功能</h3><p>最小改動</p></div><div class="codebox"><button class="copy" data-copy="hermes-062">複製</button><pre id="hermes-062">請用最小改動完成 [功能/修正]。不要新增依賴、不要重構無關檔案。完成後執行相關測試，並列出修改與驗證結果。</pre></div><div class="why"><strong>為什麼有效：</strong>控制代理改動範圍。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="coding"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Coding</span><h3>63. Bug 根因分析</h3><p>修錯誤前</p></div><div class="codebox"><button class="copy" data-copy="hermes-063">複製</button><pre id="hermes-063">請根據這個 bug 先做根因分析：[描述/錯誤訊息]。請找相關檔案、重現方式、可能原因、最小修正方案。等我確認後再改。</pre></div><div class="why"><strong>為什麼有效：</strong>避免還沒理解就動手。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="coding"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Coding</span><h3>64. 修失敗測試</h3><p>測試紅燈</p></div><div class="codebox"><button class="copy" data-copy="hermes-064">複製</button><pre id="hermes-064">測試 [test name/file] 失敗。請找出根因，判斷是實作錯或測試錯，做最小修正，重新執行測試並回報證據。</pre></div><div class="why"><strong>為什麼有效：</strong>不把測試改綠當成唯一目標。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="coding"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Coding</span><h3>65. 補測試</h3><p>提高信心</p></div><div class="codebox"><button class="copy" data-copy="hermes-065">複製</button><pre id="hermes-065">請為 [檔案/功能] 補測試，參考既有測試風格，涵蓋正常、邊界、錯誤與回歸案例。完成後執行最小相關測試。</pre></div><div class="why"><strong>為什麼有效：</strong>測試風格一致才容易維護。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="coding"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Coding</span><h3>66. Code Review</h3><p>提交前</p></div><div class="codebox"><button class="copy" data-copy="hermes-066">複製</button><pre id="hermes-066">請審查目前 git diff，優先找 bug、回歸、缺測試、安全風險、無關修改。請依嚴重程度列 findings，最後再給摘要。</pre></div><div class="why"><strong>為什麼有效：</strong>用 review 姿態而非摘要姿態。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="coding"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Coding</span><h3>67. GitHub Pages 修復</h3><p>教材網站部署</p></div><div class="codebox"><button class="copy" data-copy="hermes-067">複製</button><pre id="hermes-067">請檢查 GitHub Pages 問題：base path、相對路徑、大小寫、檔名、資源載入、404、build output。只修能證實的問題。</pre></div><div class="why"><strong>為什麼有效：</strong>靜態部署錯誤常在路徑。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="coding"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Coding</span><h3>68. 前端 RWD QA</h3><p>頁面完成後</p></div><div class="codebox"><button class="copy" data-copy="hermes-068">複製</button><pre id="hermes-068">請檢查 [頁面] 的 RWD：桌機、平板、手機是否重疊、裁切、文字溢出、按鈕太小、圖片比例錯誤。列出問題並修正。</pre></div><div class="why"><strong>為什麼有效：</strong>前端要看實際畫面品質。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="coding"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Coding</span><h3>69. 安全審查</h3><p>代理可讀寫檔案時</p></div><div class="codebox"><button class="copy" data-copy="hermes-069">複製</button><pre id="hermes-069">請審查這個 repo 的安全風險：secret 外洩、.env、權限過寬、危險 shell、檔案上傳、XSS、API key、學生個資。先列清單，不要修改。</pre></div><div class="why"><strong>為什麼有效：</strong>本機代理的檔案權限要格外小心。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="coding"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Coding</span><h3>70. 技術文件產生</h3><p>把程式轉說明</p></div><div class="codebox"><button class="copy" data-copy="hermes-070">複製</button><pre id="hermes-070">請將 [功能/專案] 整理成 HTML 技術文件，包含架構、流程、使用方式、命令一鍵複製、常見錯誤、驗證方式與參考資料。</pre></div><div class="why"><strong>為什麼有效：</strong>把工程成果變成可分享文件。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="coding"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Coding</span><h3>71. PR 說明</h3><p>提交前文件</p></div><div class="codebox"><button class="copy" data-copy="hermes-071">複製</button><pre id="hermes-071">請根據目前 diff 產生 PR 說明：Summary、Changes、Test plan、Screenshots、Risk、Rollback、Checklist。不要直接 push 或開 PR。</pre></div><div class="why"><strong>為什麼有效：</strong>保留人工確認。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="coding"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Coding</span><h3>72. commit message</h3><p>整理修改</p></div><div class="codebox"><button class="copy" data-copy="hermes-072">複製</button><pre id="hermes-072">請根據 git diff 產生 Conventional Commit message，提供一行版與詳細版。不要 commit，除非我明確要求。</pre></div><div class="why"><strong>為什麼有效：</strong>避免代理自行提交。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="coding"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Coding</span><h3>73. Build 失敗診斷</h3><p>建置錯誤</p></div><div class="codebox"><button class="copy" data-copy="hermes-073">複製</button><pre id="hermes-073">Build 失敗，log 如下：[貼上 log]。請找第一個有意義錯誤，提出最小修正，重新執行相關命令並回報結果。</pre></div><div class="why"><strong>為什麼有效：</strong>避免被連鎖錯誤帶偏。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="coding"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Coding</span><h3>74. 依賴衝突</h3><p>套件安裝問題</p></div><div class="codebox"><button class="copy" data-copy="hermes-074">複製</button><pre id="hermes-074">請診斷 dependency conflict：package manager、lockfile、peer dependencies、版本、重複套件。不要盲目刪 lockfile，先列方案。</pre></div><div class="why"><strong>為什麼有效：</strong>保護可重現安裝狀態。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="coding"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Coding</span><h3>75. 長任務分階段</h3><p>大型改版</p></div><div class="codebox"><button class="copy" data-copy="hermes-075">複製</button><pre id="hermes-075">這是大型任務。請分成：理解盤點、修改計畫、實作、驗證、回報。每一階段完成後停下來等我確認，不要一次做完。</pre></div><div class="why"><strong>為什麼有效：</strong>大型代理任務需要節點。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="education"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">教育</span><h3>76. 自然教材 HTML</h3><p>互動教材</p></div><div class="codebox"><button class="copy" data-copy="hermes-076">複製</button><pre id="hermes-076">請根據 @lesson.md 製作國小自然科 RWD 互動教材 HTML，包含概念引導、操作區、觀察紀錄、教師提示、學習單與一鍵複製 prompt。</pre></div><div class="why"><strong>為什麼有效：</strong>直接支援教材網站製作。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="education"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">教育</span><h3>77. 科展資料分析</h3><p>學生研究</p></div><div class="codebox"><button class="copy" data-copy="hermes-077">複製</button><pre id="hermes-077">請分析 @data.csv 的科展資料：變項、樣本數、描述統計、圖表建議、可能結論、限制與下一步實驗。語氣適合國小學生理解。</pre></div><div class="why"><strong>為什麼有效：</strong>兼顧資料分析與教學表達。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="education"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">教育</span><h3>78. 學習單生成</h3><p>探究課</p></div><div class="codebox"><button class="copy" data-copy="hermes-078">複製</button><pre id="hermes-078">請為 [活動] 產生國小自然探究學習單，包含問題、預測、材料、步驟、觀察、資料表、結果解釋、反思與延伸。</pre></div><div class="why"><strong>為什麼有效：</strong>探究學習需要完整紀錄結構。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="education"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">教育</span><h3>79. Rubric 量規</h3><p>素養評量</p></div><div class="codebox"><button class="copy" data-copy="hermes-079">複製</button><pre id="hermes-079">請為 [活動/作品] 設計四級 Rubric，面向包含科學概念、探究歷程、合作溝通、資料表達、反思修正。</pre></div><div class="why"><strong>為什麼有效：</strong>讓評量更具體可用。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="education"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">教育</span><h3>80. 108 課綱對應</h3><p>教案文件</p></div><div class="codebox"><button class="copy" data-copy="hermes-080">複製</button><pre id="hermes-080">請將這個自然課活動對應 108 課綱，列核心素養、學習表現、學習內容、學習目標、評量方式、差異化支持。</pre></div><div class="why"><strong>為什麼有效：</strong>符合教案與研習資料需求。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="education"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">教育</span><h3>81. 研習講義</h3><p>教師增能</p></div><div class="codebox"><button class="copy" data-copy="hermes-081">複製</button><pre id="hermes-081">請把 @notes.md 轉成教師研習講義，包含目標、流程、講師提示、實作任務、討論問題、延伸應用與一鍵複製指令。</pre></div><div class="why"><strong>為什麼有效：</strong>讓老師可以直接帶回使用。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="education"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">教育</span><h3>82. 教材網站健檢</h3><p>Science Portal 類網站</p></div><div class="codebox"><button class="copy" data-copy="hermes-082">複製</button><pre id="hermes-082">請檢查這個教材網站：首頁導覽、教材分類、RWD、連結、圖片、GitHub Pages、可讀性、教師使用流程。列優先修正清單。</pre></div><div class="why"><strong>為什麼有效：</strong>針對教材平台維護。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="education"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">教育</span><h3>83. 命題審查</h3><p>試卷或題庫</p></div><div class="codebox"><button class="copy" data-copy="hermes-083">複製</button><pre id="hermes-083">請審查自然科試題：概念是否重複、是否超綱、題幹是否清楚、選項誘答是否合理、圖文是否一致，並提出修正。</pre></div><div class="why"><strong>為什麼有效：</strong>支援自然科命題流程。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="education"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">教育</span><h3>84. 科普繪本章節</h3><p>自然科學百科</p></div><div class="codebox"><button class="copy" data-copy="hermes-084">複製</button><pre id="hermes-084">請根據 [自然主題] 產生國小到國中可讀的科普繪本章節：故事開場、核心概念、生活例子、插圖描述、實驗活動、延伸問題。</pre></div><div class="why"><strong>為什麼有效：</strong>支援科普繪本百科。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="education"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">教育</span><h3>85. 學生資料匿名化</h3><p>文件公開前</p></div><div class="codebox"><button class="copy" data-copy="hermes-085">複製</button><pre id="hermes-085">請檢查文件是否含學生個資。學生姓名中間字改成全形Ｏ，避免暴露班級、座號、聯絡資訊，保留內容可讀性。</pre></div><div class="why"><strong>為什麼有效：</strong>保護學生資料。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="education"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">教育</span><h3>86. 圖文教材腳本</h3><p>生成圖片前</p></div><div class="codebox"><button class="copy" data-copy="hermes-086">複製</button><pre id="hermes-086">請把這個自然主題拆成圖文教材腳本，每張圖包含畫面描述、文字、科學概念、學生提問與教師引導語。</pre></div><div class="why"><strong>為什麼有效：</strong>先規劃圖文，再生成素材。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="education"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">教育</span><h3>87. 科展會議摘要</h3><p>學生 meeting</p></div><div class="codebox"><button class="copy" data-copy="hermes-087">複製</button><pre id="hermes-087">請把這次科展會議紀錄整理成：完成事項、學生分工、下次前作業、資料需求、風險、家長需知道的事項。</pre></div><div class="why"><strong>為什麼有效：</strong>科展指導需要追蹤任務。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="education"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">教育</span><h3>88. 研習成果報告</h3><p>活動結束後</p></div><div class="codebox"><button class="copy" data-copy="hermes-088">複製</button><pre id="hermes-088">請產生研習成果報告框架，包含主題、講師、助教、日期、地點、活動流程、照片說明、學習成果、後續應用與推動方向。</pre></div><div class="why"><strong>為什麼有效：</strong>符合研習成果報告常用結構。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="education"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">教育</span><h3>89. 教育 AI 工作流</h3><p>教師 AI 協作</p></div><div class="codebox"><button class="copy" data-copy="hermes-089">複製</button><pre id="hermes-089">請設計一套教師使用 Hermes 的 AI 工作流：教材生成、資料整理、排程提醒、文件產出、網站部署、記憶沉澱與安全邊界。</pre></div><div class="why"><strong>為什麼有效：</strong>把 Hermes 放進教育工作系統。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="education"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">教育</span><h3>90. 教育版 Skill 候選</h3><p>建立教師技能庫</p></div><div class="codebox"><button class="copy" data-copy="hermes-090">複製</button><pre id="hermes-090">請列出適合我建立的 Hermes 教育 skills：自然教材、科展分析、試題審查、HTML 技術文件、研習講義、活動成果報告。每個列輸入與輸出。</pre></div><div class="why"><strong>為什麼有效：</strong>將教師例行工作 skill 化。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="setup"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">安裝診斷</span><h3>91. 權限模式建議</h3><p>想減少審核</p></div><div class="codebox"><button class="copy" data-copy="hermes-091">複製</button><pre id="hermes-091">我想降低 Hermes 每次操作都要確認的麻煩。請先說明不同權限模式的風險，幫我設計低風險白名單，而不是直接開最大權限。</pre></div><div class="why"><strong>為什麼有效：</strong>便利與安全需要平衡。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="setup"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">安裝診斷</span><h3>92. 網路工具檢查</h3><p>Web search 不能用</p></div><div class="codebox"><button class="copy" data-copy="hermes-092">複製</button><pre id="hermes-092">Hermes 的 web search 或 browser 工具不能用。請檢查工具設定、provider、API key、網路、代理、技能依賴與 log。請列出最小測試。</pre></div><div class="why"><strong>為什麼有效：</strong>網路工具問題可能來自多層設定。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="cli"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">CLI/TUI</span><h3>93. 任務輸出格式鎖定</h3><p>避免回答亂掉</p></div><div class="codebox"><button class="copy" data-copy="hermes-093">複製</button><pre id="hermes-093">這次任務請固定用以下格式回報：目標、已讀資料、計畫、執行、驗證、產出檔案、風險、下一步。每次回報都照此格式。</pre></div><div class="why"><strong>為什麼有效：</strong>長任務需要一致回報格式。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="desktop"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Desktop</span><h3>94. Desktop 專案工作區</h3><p>多專案切換</p></div><div class="codebox"><button class="copy" data-copy="hermes-094">複製</button><pre id="hermes-094">請幫我規劃 Hermes Desktop 的多專案工作區管理方式：每個專案的資料夾、記憶、skills、輸出位置、禁止讀取路徑與啟動方式。</pre></div><div class="why"><strong>為什麼有效：</strong>避免不同專案記憶與檔案混在一起。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="skills"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Skills</span><h3>95. Skill 與 Memory 分工</h3><p>不知道該存哪裡</p></div><div class="codebox"><button class="copy" data-copy="hermes-095">複製</button><pre id="hermes-095">請判斷以下內容應該放到 Hermes memory、skill、專案文件、設定檔，還是不要保存。請說明原因與保存風險。</pre></div><div class="why"><strong>為什麼有效：</strong>把知識、流程、設定分開管理。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="memory"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Memory</span><h3>96. 跨工具記憶同步</h3><p>Hermes/Codex/Claude 共用脈絡</p></div><div class="codebox"><button class="copy" data-copy="hermes-096">複製</button><pre id="hermes-096">請把這個專案的關鍵脈絡整理成可同時給 Hermes、Codex、Claude Code 使用的 memory.md，包含目標、規則、命令、檔案、風險與偏好。</pre></div><div class="why"><strong>為什麼有效：</strong>支援多代理協作。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="gateway"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Gateway</span><h3>97. 代理可做/不可做清單</h3><p>接到真實通道前</p></div><div class="codebox"><button class="copy" data-copy="hermes-097">複製</button><pre id="hermes-097">請為 Hermes gateway 建立 can-do / must-ask / never-do 清單。特別標註寄信、刪檔、花錢、發公開訊息、讀個資、修改資料庫等操作。</pre></div><div class="why"><strong>為什麼有效：</strong>明確界定代理行為邊界。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="coding"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Coding</span><h3>98. 任務完成證據</h3><p>避免假完成</p></div><div class="codebox"><button class="copy" data-copy="hermes-098">複製</button><pre id="hermes-098">在你說完成前，請提供證據：修改檔案、執行命令、輸出結果、測試結果、未驗證項目、殘餘風險。若沒驗證，請明確說沒有。</pre></div><div class="why"><strong>為什麼有效：</strong>代理回報要可追蹤。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="education"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">教育</span><h3>99. 教師年度工作助理</h3><p>長期 Hermes 使用</p></div><div class="codebox"><button class="copy" data-copy="hermes-099">複製</button><pre id="hermes-099">請設計 Hermes 作為自然教師年度助理的工作流：比賽時程、課程教材、科展、研習、成果報告、網站維護、文件歸檔、提醒與週報。</pre></div><div class="why"><strong>為什麼有效：</strong>把 Hermes 的長期記憶與排程用在教育工作。</div></article>
+<article class="prompt-card" data-agent="hermes" data-cat="skills"><div class="prompt-head"><span class="agent-label">Hermes Agent</span><span class="tag">Skills</span><h3>100. Hermes Prompt Library 內部化</h3><p>建立自己的 Hermes 提示詞庫</p></div><div class="codebox"><button class="copy" data-copy="hermes-100">複製</button><pre id="hermes-100">請把我常用的 Hermes prompt 整理成個人 Prompt Library，依安裝診斷、CLI、Desktop、Skills、Memory、Gateway、Coding、教育分類，並標示可轉成 skill 的項目。</pre></div><div class="why"><strong>為什麼有效：</strong>讓提示詞庫變成個人工作系統。</div></article>
+</div>
+</section>
+
+<section id="copy-all"><h2>七、一鍵複製常用總範本</h2><h3>通用 Agent 任務範本</h3><div class="codebox"><button class="copy" data-copy="general-template">複製</button><pre id="general-template">請先理解任務與相關檔案，再提出計畫。不要直接大幅修改。
+
+任務目標：[填入目標]
+限制條件：[不可修改/不可刪除/不可新增依賴]
+驗證方式：[test/lint/build/manual QA]
+輸出格式：修改摘要、驗證結果、未驗證風險、下一步建議。
+
+若需要更高權限或更大範圍修改，請先停下來問我。</pre></div><h3>完成前證據範本</h3><div class="codebox"><button class="copy" data-copy="evidence-template">複製</button><pre id="evidence-template">在你說完成前，請列出：
+1. 修改了哪些檔案
+2. 為什麼修改
+3. 執行了哪些命令
+4. 測試或驗證結果
+5. 沒有驗證的部分
+6. 殘餘風險
+7. 建議下一步</pre></div></section>
+</main></div>
+<script>
+const search=document.getElementById('search');const cards=[...document.querySelectorAll('.prompt-card')];const filters=[...document.querySelectorAll('.filter')];let active='all';
+function applyFilter(){const q=(search.value||'').toLowerCase();cards.forEach(card=>{const okAgent=active==='all'||card.dataset.agent===active;const okSearch=!q||card.innerText.toLowerCase().includes(q);card.classList.toggle('hidden',!(okAgent&&okSearch));});}
+filters.forEach(btn=>btn.addEventListener('click',()=>{filters.forEach(b=>b.classList.remove('active'));btn.classList.add('active');active=btn.dataset.agent;applyFilter();}));
+search.addEventListener('input',applyFilter);
+document.addEventListener('click',async e=>{const btn=e.target.closest('.copy');if(!btn)return;const target=document.getElementById(btn.dataset.copy);if(!target)return;try{await navigator.clipboard.writeText(target.innerText);const old=btn.textContent;btn.textContent='已複製';setTimeout(()=>btn.textContent=old,1200);}catch(err){alert('複製失敗，請手動選取文字。');}});
+</script>
+</body>
+</html>
