@@ -1,0 +1,75 @@
+/* ============================================================
+   responsive.css — 響應式版面（RWD）
+   斷點：1440 / 1024 / 768 / 375 / 320
+   ============================================================ */
+
+/* ---------- 大桌面（≤1440px 微調容器） ---------- */
+@media (max-width: 1200px) {
+  .cards--grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ---------- 筆電 / 小桌面 ---------- */
+@media (max-width: 1024px) {
+  .stats { grid-template-columns: repeat(3, 1fr); }
+  .library__layout { grid-template-columns: 1fr; }
+  .cards--grid { grid-template-columns: repeat(2, 1fr); }
+  .footer__inner { grid-template-columns: repeat(2, 1fr); }
+
+  /* 篩選改為抽屜（手機/平板共用） */
+  .filter-toggle { display: inline-flex; margin-bottom: 14px; }
+  .filters {
+    position: fixed; top: 0; left: 0; bottom: 0; width: min(320px, 88vw);
+    z-index: 1400; border-radius: 0; transform: translateX(-100%);
+    transition: transform var(--transition); max-height: 100vh; box-shadow: var(--shadow);
+  }
+  .filters.is-open { transform: translateX(0); }
+  .filters__close { display: inline-flex; }
+}
+
+/* ---------- 平板 ---------- */
+@media (max-width: 768px) {
+  /* 導覽列改為漢堡選單 */
+  .nav-toggle { display: inline-flex; }
+  .navbar__nav {
+    position: absolute; top: 100%; left: 0; right: 0;
+    flex-direction: column; gap: 0; padding: 8px;
+    background: var(--bg-2); border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow); display: none;
+  }
+  .navbar__nav.is-open { display: flex; }
+  .navbar__link { padding: 12px; border-radius: 8px; }
+  .navbar__title-en { display: none; }
+
+  .cards--grid { grid-template-columns: repeat(2, 1fr); }
+  .stats { grid-template-columns: repeat(3, 1fr); }
+
+  /* Modal 接近全螢幕 */
+  .modal { padding: 0; }
+  .modal__dialog { max-width: 100%; max-height: 100vh; height: 100vh; border-radius: 0; }
+
+  .detail__grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* 清單模式在平板恢復直向，避免縮圖過窄 */
+  .cards--list .card { flex-direction: column; }
+  .cards--list .card__thumb { width: 100%; aspect-ratio: 16/9; }
+}
+
+/* ---------- 手機 ---------- */
+@media (max-width: 560px) {
+  .cards--grid { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .footer__inner { grid-template-columns: 1fr; }
+  .hero__actions { flex-direction: column; }
+  .hero__actions .btn { width: 100%; }
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .card__actions { flex-wrap: wrap; }
+  .preview__frame.w-tablet { width: 100%; }
+}
+
+/* ---------- 小型手機（320px） ---------- */
+@media (max-width: 360px) {
+  .stat { padding: 12px 6px; }
+  .stat__label { font-size: 0.7rem; }
+  .navbar__title-zh { font-size: 0.92rem; }
+  .code-tab { padding: 10px 10px; }
+}
