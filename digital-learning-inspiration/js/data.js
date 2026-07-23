@@ -1608,8 +1608,11 @@
     }
   ];
 
+  // 第二階段擴充案例（若已載入 js/data-phase2.js 則一併併入）
+  var phase2 = (window.DATA_PHASE2 && window.DATA_PHASE2.examples) || [];
+
   window.DATA = {
-    updatedAt: "2026-07-22",
-    examples: groupA.concat(groupB, groupC, groupD)
+    updatedAt: "2026-07-23",
+    examples: groupA.concat(groupB, groupC, groupD, phase2)
   };
 })();

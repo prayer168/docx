@@ -36,7 +36,10 @@ digital-learning-inspiration/
 │   └── responsive.css    # 響應式斷點
 ├── js/
 │   ├── app.js            # 主程式：渲染、搜尋、排序、Modal、事件
-│   ├── data.js           # 案例資料庫（主要資料來源）
+│   ├── data.js           # 案例資料庫（第一階段 60 個，主要資料來源）
+│   ├── data-phase2.js    # 第二階段擴充：p5.js / Matter.js / Chart.js
+│   ├── data-phase2b.js   # 第二階段擴充：UI 元件 / 捲動敘事 / 遊戲化學習
+│   ├── data-phase2c.js   # 第二階段擴充：測驗 / 虛擬實驗 / 導覽 / 無障礙 / 行動
 │   ├── filters.js        # 篩選器邏輯與面板
 │   ├── favorites.js      # 收藏（localStorage）
 │   ├── code-runner.js    # 複製、下載、iframe 即時預覽
@@ -89,12 +92,18 @@ npx serve
 
 ## 五、如何新增案例
 
-在 `js/data.js` 對應分組陣列（`groupA`～`groupD`）中新增一個物件即可，搜尋、篩選、卡片與統計都會**自動更新**（皆由資料動態產生，無寫死的卡片 HTML）。
+有兩種方式，搜尋、篩選、卡片與統計都會**自動更新**（皆由資料動態產生，無寫死的卡片 HTML）：
 
-CSS 動畫類可使用 `cssAnim({...})` 工廠函式減少重複欄位。新增後如需同步備份 JSON：
+1. **第一階段案例**：在 `js/data.js` 對應分組陣列（`groupA`～`groupD`）中新增物件；CSS 動畫類可使用 `cssAnim({...})` 工廠函式。
+2. **後續擴充案例**：在 `js/data-phase2*.js` 中以 `window.__P2mk({...})`（或 `mk({...})`）新增物件並 `push` 進共用陣列；此工廠會自動補齊合理預設值，只需提供具辨識度的 `title / description / teachingApplication / tags` 等欄位即可，避免出現空白或空泛內容。要新增下一批（例如 `data-phase3.js`），比照 phase2 的模式建立檔案，並在 `index.html` 於 `data.js` 之前載入即可。
+
+新增後如需同步備份 JSON：
 
 ```bash
-node -e "global.window={};require('./js/data.js');require('fs').writeFileSync('data/examples.json',JSON.stringify(window.DATA,null,2))"
+node -e "global.window={};global.matchMedia=function(){return{matches:false}};\
+require('./js/data-phase2.js');require('./js/data-phase2b.js');require('./js/data-phase2c.js');\
+require('./js/data.js');\
+require('fs').writeFileSync('data/examples.json',JSON.stringify(window.DATA,null,2))"
 ```
 
 ### 案例資料欄位說明
@@ -159,7 +168,8 @@ node -e "global.window={};require('./js/data.js');require('fs').writeFileSync('d
 
 ## 十、測試結果摘要
 
-- ✅ 60 個案例、58 個具完整可執行程式碼（超過需求的 20 個）
+- ✅ **141 個案例**（第一階段 60 ＋ 第二階段 81）、**139 個具完整可執行程式碼**
+- ✅ 已涵蓋全部 18 種資源類型：JavaScript 特效、CSS 動畫、自然科互動網站、Three.js、GSAP、SVG、Canvas、p5.js、Matter.js、Chart.js、UI 互動元件、捲動敘事、遊戲化學習、測驗與評量、虛擬實驗、教材版面與導覽、無障礙互動、行動載具互動
 - ✅ 搜尋、多條件篩選、排序、收藏（localStorage 保存）、深色模式、複製、下載、即時預覽皆可操作
 - ✅ 全部 JS 檔通過語法檢查、`data.js` 通過解析、無重複 id、核心欄位齊全
 - ✅ RWD 320～1440px 無整頁水平捲軸；Modal 手機版接近全螢幕
