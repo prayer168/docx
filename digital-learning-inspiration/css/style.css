@@ -249,3 +249,47 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ---------- 主題色標題底線裝飾 ---------- */
 .section__title { position: relative; }
+
+/* ============================================================
+   深色／淺色模式細節微調
+   ============================================================ */
+/* 文字選取色 */
+::selection { background: color-mix(in srgb, var(--c-primary-2) 55%, transparent); color: #fff; }
+
+/* 表單控制項統一使用主題色 */
+input[type="range"], input[type="checkbox"], input[type="radio"], select, progress {
+  accent-color: var(--c-primary);
+}
+
+/* 捲軸配色（Firefox） */
+* { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--text-muted) 55%, transparent) transparent; }
+/* 捲軸配色（WebKit） */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-muted) 45%, transparent);
+  border-radius: 999px; border: 2px solid transparent; background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--c-primary-2) 60%, transparent); background-clip: padding-box; }
+
+/* 深色模式：卡片與面板加一層極淡的內光，提升玻璃質感層次 */
+[data-theme="dark"] .card,
+[data-theme="dark"] .filters,
+[data-theme="dark"] .stat,
+[data-theme="dark"] .guide-card {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+[data-theme="dark"] .card:hover {
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+/* 深色模式：Hero 光暈更收斂，避免過曝 */
+[data-theme="dark"] .hero__glow { opacity: 0.55; }
+/* 淺色模式：Hero 光暈略提高飽和，避免太淡 */
+[data-theme="light"] .hero__glow { opacity: 0.85; }
+
+/* 主題切換時的整體過渡（尊重減少動態） */
+@media (prefers-reduced-motion: no-preference) {
+  .card, .filters, .navbar, .footer, .stat, .btn, .tag, .chip, .modal__dialog {
+    transition: background var(--transition), border-color var(--transition), color var(--transition), box-shadow var(--transition);
+  }
+}

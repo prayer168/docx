@@ -318,7 +318,15 @@
       codeHtml = buildCodeSection(ex);
     }
 
-    body.innerHTML =
+    var heroSrc = thumbSrc(ex);
+    var hero = '<div class="detail__hero" style="background:' + gradFor(ex) + '">' +
+      (heroSrc
+        ? '<img src="' + esc(heroSrc) + '" alt="' + esc(ex.title) + ' 預覽" onerror="this.remove()">'
+        : '<span class="detail__hero-emoji" aria-hidden="true">' + emojiFor(ex) + "</span>") +
+      '<span class="detail__hero-tag">' + esc(ex.type) + "</span>" +
+      "</div>";
+
+    body.innerHTML = hero +
       '<div class="detail__header">' +
         '<span class="detail__id">' + esc(ex.id) + "</span>" +
         '<h2 class="detail__title" id="modal-title">' + esc(ex.title) + "</h2>" +

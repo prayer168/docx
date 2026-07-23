@@ -15,9 +15,11 @@
     try { window.localStorage.setItem(key, val); return true; } catch (e) { return false; }
   }
 
-  /** 套用主題到 <body> 的 data-theme */
+  /** 套用主題到 <body> 的 data-theme，並同步行動瀏覽器工具列顏色 */
   function apply(theme) {
     document.body.setAttribute("data-theme", theme);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", theme === "light" ? "#f4f7fb" : "#0b1020");
   }
 
   /** 初始化：優先使用者選擇 → 系統偏好 → 預設深色 */
