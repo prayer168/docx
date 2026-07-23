@@ -157,7 +157,15 @@ require('fs').writeFileSync('data/examples.json',JSON.stringify(window.DATA,null
 - Three.js / GSAP 案例需透過 CDN 載入，離線或無網路時無法執行（已提供載入失敗提示）；其餘案例皆可離線使用。
 - 即時預覽使用 `sandbox="allow-scripts"`，僅執行本站已知的示範程式碼；不允許存取父頁面 DOM、不開啟彈出視窗。
 - 收藏與偏好設定儲存於瀏覽器 `localStorage`，無痕模式或停用儲存時無法保存（已提供友善提示）。
-- 縮圖策略：**每張卡片皆有依資源類型上色的漸層縮圖**（含類型 emoji 圖示）；其中約 26 個可離線執行的精選案例另附**由範例實際渲染截圖產生的真實縮圖**（`assets/thumbnails/<id>.png`，清單見 `js/thumbnails.js`）。需要 CDN 的案例（Three.js／GSAP／p5.js／Matter.js／Chart.js）因離線無法擷取實際畫面，維持漸層＋emoji 呈現。要新增真實縮圖，將 `<id>.png` 放入 `assets/thumbnails/` 並把該 id 加入 `js/thumbnails.js` 的 `window.THUMBS` 陣列即可。
+- 縮圖策略：**每張卡片皆有依資源類型上色的漸層縮圖**（含類型 emoji 圖示）；其中約 26 個可離線執行的精選案例另附**由範例實際渲染截圖產生的真實縮圖**（`assets/thumbnails/<id>.png`，清單見 `js/thumbnails.js`）。需要 CDN 的案例（Three.js／GSAP／p5.js／Matter.js／Chart.js）因離線無法擷取實際畫面，維持漸層＋emoji 呈現。要批次產生真實縮圖，可使用內附的開發工具 `scripts/generate-thumbnails.js`（需 `npm install --save-dev playwright`）：
+
+```bash
+node scripts/generate-thumbnails.js            # 產生所有具完整程式碼的案例縮圖
+node scripts/generate-thumbnails.js --offline  # 僅免程式庫（可離線）案例
+node scripts/generate-thumbnails.js js-001 sci-001   # 只產生指定 id
+```
+
+它會渲染案例的完整程式碼、擷取畫面存到 `assets/thumbnails/<id>.png`，並自動合併更新 `js/thumbnails.js` 的 `window.THUMBS`。需要 CDN 的案例請在**有網路**的環境執行才能擷取到實際畫面。此工具僅開發時使用，網站瀏覽本身不需 Node.js。
 
 ---
 
