@@ -76,6 +76,29 @@
   };
   function emojiFor(ex) { return TYPE_EMOJI[ex.type] || "✨"; }
 
+  // 每個資源類型的縮圖漸層底色（視覺辨識，缺圖時仍具設計感）
+  var TYPE_GRAD = {
+    "JavaScript 特效": ["#f59e0b", "#b45309"], "CSS 動畫": ["#ec4899", "#7c3aed"],
+    "自然科互動網站": ["#0ea5a4", "#155e63"], "Three.js 案例": ["#2563eb", "#0b1e56"],
+    "GSAP 案例": ["#22c55e", "#14532d"], "SVG 案例": ["#8b5cf6", "#4c1d95"],
+    "Canvas 案例": ["#06b6d4", "#0e4a5e"], "p5.js 案例": ["#f43f5e", "#7f1d3a"],
+    "Matter.js 物理模擬": ["#64748b", "#1e293b"], "Chart.js 與資料視覺化": ["#3b82f6", "#1e3a8a"],
+    "UI 互動元件": ["#14b8a6", "#0f766e"], "捲動敘事": ["#a855f7", "#581c87"],
+    "遊戲化學習": ["#f97316", "#9a3412"], "測驗與評量": ["#10b981", "#065f46"],
+    "虛擬實驗": ["#0891b2", "#164e63"], "教材版面與導覽": ["#6366f1", "#312e81"],
+    "無障礙互動": ["#0d9488", "#134e4a"], "行動載具互動": ["#e11d48", "#881337"]
+  };
+  function gradFor(ex) {
+    var g = TYPE_GRAD[ex.type] || ["#334155", "#0f172a"];
+    return "linear-gradient(135deg," + g[0] + "," + g[1] + ")";
+  }
+  // 是否有真實截圖縮圖（由 js/thumbnails.js 提供 window.THUMBS 清單）
+  function thumbSrc(ex) {
+    if (ex.thumbnail) return ex.thumbnail;
+    if (window.THUMBS && window.THUMBS.indexOf(ex.id) !== -1) return "assets/thumbnails/" + ex.id + ".png";
+    return "";
+  }
+
   // ---------- 搜尋比對 ----------
   function buildSearchIndex(ex) {
     return [
@@ -123,15 +146,16 @@
     var techTags = (ex.technologies || []).slice(0, 4).map(function (t) {
       return '<span class="tag">' + esc(t) + "</span>";
     }).join("");
-    var thumb = ex.thumbnail
-      ? '<img src="' + esc(ex.thumbnail) + '" alt="' + esc(ex.title) + ' 縮圖" loading="lazy" ' +
+    var src = thumbSrc(ex);
+    var thumb = src
+      ? '<img src="' + esc(src) + '" alt="' + esc(ex.title) + ' 縮圖" loading="lazy" ' +
         'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">' +
         '<span class="card__thumb-emoji" style="display:none" aria-hidden="true">' + emojiFor(ex) + "</span>"
       : '<span class="card__thumb-emoji" aria-hidden="true">' + emojiFor(ex) + "</span>";
 
     return '' +
       '<article class="card" data-id="' + esc(ex.id) + '">' +
-        '<div class="card__thumb">' +
+        '<div class="card__thumb" style="background:' + gradFor(ex) + '">' +
           '<div class="card__badges">' +
             (ex.featured ? '<span class="tag tag--featured">精選</span>' : "") +
           "</div>" +

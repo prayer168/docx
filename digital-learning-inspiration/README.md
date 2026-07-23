@@ -157,7 +157,7 @@ require('fs').writeFileSync('data/examples.json',JSON.stringify(window.DATA,null
 - Three.js / GSAP 案例需透過 CDN 載入，離線或無網路時無法執行（已提供載入失敗提示）；其餘案例皆可離線使用。
 - 即時預覽使用 `sandbox="allow-scripts"`，僅執行本站已知的示範程式碼；不允許存取父頁面 DOM、不開啟彈出視窗。
 - 收藏與偏好設定儲存於瀏覽器 `localStorage`，無痕模式或停用儲存時無法保存（已提供友善提示）。
-- 縮圖以 emoji 備援呈現，如需實際截圖請自行放入 `assets/thumbnails/`。
+- 縮圖策略：**每張卡片皆有依資源類型上色的漸層縮圖**（含類型 emoji 圖示）；其中約 26 個可離線執行的精選案例另附**由範例實際渲染截圖產生的真實縮圖**（`assets/thumbnails/<id>.png`，清單見 `js/thumbnails.js`）。需要 CDN 的案例（Three.js／GSAP／p5.js／Matter.js／Chart.js）因離線無法擷取實際畫面，維持漸層＋emoji 呈現。要新增真實縮圖，將 `<id>.png` 放入 `assets/thumbnails/` 並把該 id 加入 `js/thumbnails.js` 的 `window.THUMBS` 陣列即可。
 
 ---
 
