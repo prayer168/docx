@@ -73,6 +73,16 @@
     <!-- ===================== 首頁主視覺區 ===================== -->
     <section class="hero" id="home">
       <div class="hero__glow" aria-hidden="true"></div>
+      <div class="hero__aurora" aria-hidden="true"></div>
+      <div class="hero__floaters" aria-hidden="true">
+        <span style="--x:8%;--d:0s;--s:18s">🔬</span>
+        <span style="--x:20%;--d:-3s;--s:22s">🧪</span>
+        <span style="--x:34%;--d:-7s;--s:20s">🪐</span>
+        <span style="--x:52%;--d:-2s;--s:24s">⚛️</span>
+        <span style="--x:68%;--d:-9s;--s:19s">📐</span>
+        <span style="--x:82%;--d:-5s;--s:23s">🧬</span>
+        <span style="--x:92%;--d:-11s;--s:21s">💡</span>
+      </div>
       <div class="hero__inner">
         <p class="hero__eyebrow">Interactive Digital Learning Design Inspiration Library</p>
         <h1 class="hero__title">數位教材設計靈感大全</h1>
@@ -243,6 +253,16 @@
           <p>《數位教材設計靈感大全》是一套提供教師、教材設計者、教育科技工作者與學生使用的數位教材設計案例資料庫。我們相信程式特效不只是視覺展示，更能轉化為真正有意義的互動教材。</p>
           <p>本站收錄 JavaScript 特效、CSS 動畫、自然科互動網站案例，以及 Three.js、GSAP、SVG、Canvas 等教材效果案例，並針對每個案例提供教學應用、技術分析與修改建議。</p>
           <p>網站以純 HTML、CSS 與原生 JavaScript 開發，不需後端伺服器、不需登入、不連接資料庫，所有資料儲存於本地端，可直接部署到 GitHub Pages，也可在本機直接開啟 <code>index.html</code> 使用。</p>
+
+          <div class="about__tools">
+            <h3>匯出資料集</h3>
+            <p>您可以下載本站完整案例資料庫，作為自訂教材平台的資料來源或離線備份。</p>
+            <div class="about__tools-btns">
+              <button id="export-json" class="btn btn--ghost btn--sm">匯出全部案例（JSON）</button>
+              <button id="export-csv" class="btn btn--ghost btn--sm">匯出摘要（CSV）</button>
+              <button id="show-shortcuts" class="btn btn--ghost btn--sm">鍵盤快捷鍵（按 ?）</button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -287,6 +307,28 @@
     <button id="back-to-top" class="back-to-top" aria-label="回到頂部" hidden>↑ 回到頂部</button>
   </footer>
 
+  <!-- 鍵盤快捷鍵說明視窗 -->
+  <div class="modal" id="shortcuts-modal" role="dialog" aria-modal="true" aria-labelledby="sc-title" hidden>
+    <div class="modal__backdrop" data-close-shortcuts></div>
+    <div class="modal__dialog modal__dialog--sm" role="document">
+      <button class="modal__close icon-btn" id="shortcuts-close" aria-label="關閉（Esc）">✕</button>
+      <div class="modal__body">
+        <h2 id="sc-title" class="section__title">鍵盤快捷鍵</h2>
+        <ul class="shortcuts">
+          <li><kbd>/</kbd><span>聚焦搜尋列</span></li>
+          <li><kbd>t</kbd><span>切換深色／淺色模式</span></li>
+          <li><kbd>f</kbd><span>開關篩選面板</span></li>
+          <li><kbd>g</kbd><span>網格檢視</span></li>
+          <li><kbd>l</kbd><span>清單檢視</span></li>
+          <li><kbd>m</kbd><span>載入更多案例</span></li>
+          <li><kbd>?</kbd><span>顯示／關閉本說明</span></li>
+          <li><kbd>Esc</kbd><span>關閉視窗或清除搜尋</span></li>
+        </ul>
+        <p class="shortcuts__note">在輸入框中打字時，快捷鍵不會觸發。</p>
+      </div>
+    </div>
+  </div>
+
   <!-- 全域提示（複製成功 / localStorage 錯誤等） -->
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
@@ -301,6 +343,10 @@
   <script src="js/data-phase3c.js"></script>
   <script src="js/data-phase3d.js"></script>
   <script src="js/data-phase4a.js"></script>
+  <script src="js/data-phase4b.js"></script>
+  <script src="js/data-phase4c.js"></script>
+  <script src="js/data-phase4d.js"></script>
+  <script src="js/data-phase4e.js"></script>
   <script src="js/data.js"></script>
   <!-- 具真實截圖縮圖的案例 id 清單 -->
   <script src="js/thumbnails.js"></script>

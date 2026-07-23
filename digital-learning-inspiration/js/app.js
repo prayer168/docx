@@ -828,6 +828,108 @@
     if (backTop) backTop.addEventListener("click", function () {
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
+
+    // 匯出資料集
+    var expJson = $("#export-json");
+    if (expJson) expJson.addEventListener("click", function () { exportDataset("json"); });
+    var expCsv = $("#export-csv");
+    if (expCsv) expCsv.addEventListener("click", function () { exportDataset("csv"); });
+
+    // 鍵盤快捷鍵說明視窗
+    var scShow = $("#show-shortcuts");
+    if (scShow) scShow.addEventListener("click", function () { toggleShortcuts(true); });
+    $("#shortcuts-close").addEventListener("click", function () { toggleShortcuts(false); });
+    $("#shortcuts-modal").addEventListener("click", function (e) {
+      if (e.target.hasAttribute("data-close-shortcuts")) toggleShortcuts(false);
+    });
+
+    // 全域鍵盤快捷鍵
+    document.addEventListener("keydown", handleShortcuts);
+  }
+
+  // ---------- 匯出整個資料集 ----------
+  function downloadBlob(content, filename, mime) {
+    var blob = new Blob([content], { type: mime });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  function csvCell(v) {
+    var s = String(v == null ? "" : v).replace(/"/g, '""');
+    return '"' + s + '"';
+  }
+  function exportDataset(format) {
+    if (format === "csv") {
+      var cols = ["id", "title", "titleEn", "type", "subjects", "difficulty",
+        "technologies", "gradeLevels", "requiresLibrary", "hasFullCode", "tags"];
+      var rows = [cols.join(",")];
+      EXAMPLES.forEach(function (ex) {
+        rows.push(cols.map(function (c) {
+          var v = ex[c];
+          if (Array.isArray(v)) v = v.join("、");
+          return csvCell(v);
+        }).join(","));
+      });
+      // 加上 BOM 讓 Excel 正確辨識 UTF-8
+      downloadBlob("﻿" + rows.join("\r\n"), "digital-learning-dataset.csv", "text/csv;charset=utf-8");
+      CodeRunner.toast("已匯出 " + EXAMPLES.length + " 筆案例摘要（CSV）");
+    } else {
+      var payload = {
+        app: "數位教材設計靈感大全",
+        exportedAt: new Date().toISOString(),
+        count: EXAMPLES.length,
+        updatedAt: (window.DATA && window.DATA.updatedAt) || "",
+        examples: EXAMPLES
+      };
+      downloadBlob(JSON.stringify(payload, null, 2), "digital-learning-dataset.json", "application/json");
+      CodeRunner.toast("已匯出 " + EXAMPLES.length + " 筆完整案例（JSON）");
+    }
+  }
+
+  // ---------- 鍵盤快捷鍵 ----------
+  function toggleShortcuts(show) {
+    var m = $("#shortcuts-modal");
+    if (!m) return;
+    if (show) {
+      m.__last = document.activeElement;
+      m.hidden = false;
+      $("#shortcuts-close").focus();
+    } else {
+      m.hidden = true;
+      if (m.__last && m.__last.focus) m.__last.focus();
+    }
+  }
+  function handleShortcuts(e) {
+    // 說明視窗開啟時，Esc 關閉
+    var scModal = $("#shortcuts-modal");
+    if (scModal && !scModal.hidden) {
+      if (e.key === "Escape") { e.preventDefault(); toggleShortcuts(false); }
+      return;
+    }
+    // 詳情 Modal 開啟時不攔截（其自身處理 Esc / Tab）
+    var detail = $("#detail-modal");
+    if (detail && !detail.hidden) return;
+    // 在輸入元件中打字時不觸發（除了 Escape 清除搜尋）
+    var el = document.activeElement;
+    var typing = el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT" || el.isContentEditable);
+    if (typing) {
+      if (e.key === "Escape" && el.id === "search-input") {
+        searchTerm = ""; setSearchInput(""); shownCount = PAGE_SIZE; render(); el.blur();
+      }
+      return;
+    }
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    switch (e.key) {
+      case "/": e.preventDefault(); var s = $("#search-input"); if (s) { s.focus(); s.select(); } break;
+      case "t": document.getElementById("theme-toggle").click(); break;
+      case "f": $("#filter-toggle").click(); break;
+      case "g": setView("grid"); break;
+      case "l": setView("list"); break;
+      case "m": var lm = $("#load-more"); if (lm && !lm.hidden) lm.click(); break;
+      case "?": e.preventDefault(); toggleShortcuts(true); break;
+    }
   }
 
   function setView(view) {

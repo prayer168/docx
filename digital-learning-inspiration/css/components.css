@@ -199,6 +199,25 @@
 /* ---------- 關於本站 ---------- */
 .about__content { max-width: 820px; }
 .about__content p { color: var(--text-muted); }
+.about__tools {
+  margin-top: 24px; padding: 20px; border: 1px solid var(--border);
+  border-radius: var(--radius); background: var(--surface); backdrop-filter: blur(var(--glass-blur));
+}
+.about__tools h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.about__tools-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+/* ---------- 鍵盤快捷鍵 ---------- */
+.modal__dialog--sm { max-width: 460px; }
+.shortcuts { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 8px; }
+.shortcuts li { display: flex; align-items: center; gap: 12px; }
+.shortcuts span { color: var(--text-muted); }
+.shortcuts__note { margin-top: 16px; font-size: 0.85rem; color: var(--text-muted); }
+kbd {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 34px;
+  padding: 4px 8px; font-family: var(--font-mono); font-size: 0.85rem;
+  background: var(--bg-2); color: var(--text);
+  border: 1px solid var(--border); border-bottom-width: 3px; border-radius: 7px;
+}
 
 /* ============================================================
    Modal 案例詳情
