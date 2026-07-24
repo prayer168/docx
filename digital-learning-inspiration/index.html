@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b1020" />
+  <meta name="description" content="數位教材設計靈感大全：收錄 JavaScript 特效、CSS 動畫、Three.js、GSAP、SVG 與 Canvas 的互動教材設計案例資料庫，提供搜尋、篩選、收藏、程式碼預覽與即時執行功能。" />
+  <title>數位教材設計靈感大全 | Interactive Digital Learning Design Inspiration Library</title>
+
+  <!-- 內嵌 SVG favicon（避免額外請求與 404） -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='6' fill='%230ea5a4'/%3E%3Cellipse cx='16' cy='16' rx='14' ry='6' fill='none' stroke='%232563eb' stroke-width='2'/%3E%3C/svg%3E" />
+
+  <!-- 樣式表：核心、元件、響應式 -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+
+  <!-- Prism.js（程式碼語法醒目顯示），以 CDN 載入，含載入失敗提示 -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css"
+    onerror="window.__prismCssFailed = true;"
+  />
+</head>
+<body data-theme="dark">
+  <!-- 略過導覽，直接跳到主要內容（無障礙） -->
+  <a href="#main-content" class="skip-link">略過導覽，直接前往主要內容</a>
+
+  <!-- 首頁低調 Canvas 粒子背景 -->
+  <canvas id="bg-canvas" class="bg-canvas" aria-hidden="true"></canvas>
+
+  <!-- ===================== 頂部導覽列 ===================== -->
+  <header class="navbar" id="navbar">
+    <div class="navbar__inner">
+      <a class="navbar__brand" href="#home" aria-label="回到首頁">
+        <span class="navbar__logo" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="32" height="32" role="img" aria-hidden="true">
+            <circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+            <circle cx="16" cy="16" r="4" fill="currentColor"/>
+            <ellipse cx="16" cy="16" rx="14" ry="6" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
+            <ellipse cx="16" cy="16" rx="6" ry="14" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
+          </svg>
+        </span>
+        <span class="navbar__title">
+          <span class="navbar__title-zh">數位教材設計靈感大全</span>
+          <span class="navbar__title-en">Digital Learning Design Inspiration</span>
+        </span>
+      </a>
+
+      <nav class="navbar__nav" id="primary-nav" aria-label="主要導覽">
+        <a href="#home" class="navbar__link">首頁</a>
+        <a href="#library" class="navbar__link">案例資料庫</a>
+        <a href="#subjects" class="navbar__link">教學分類</a>
+        <a href="#technologies" class="navbar__link">技術分類</a>
+        <a href="#favorites" class="navbar__link">收藏</a>
+        <a href="#guide" class="navbar__link">使用指南</a>
+        <a href="#about" class="navbar__link">關於本站</a>
+      </nav>
+
+      <div class="navbar__actions">
+        <button id="theme-toggle" class="icon-btn" aria-label="切換深色／淺色模式" title="切換深色／淺色模式">
+          <span class="theme-icon theme-icon--sun" aria-hidden="true">☀️</span>
+          <span class="theme-icon theme-icon--moon" aria-hidden="true">🌙</span>
+        </button>
+        <button id="nav-toggle" class="icon-btn nav-toggle" aria-label="開啟選單" aria-expanded="false" aria-controls="primary-nav">
+          <span aria-hidden="true">☰</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <!-- ===================== 首頁主視覺區 ===================== -->
+    <section class="hero" id="home">
+      <div class="hero__glow" aria-hidden="true"></div>
+      <div class="hero__aurora" aria-hidden="true"></div>
+      <div class="hero__floaters" aria-hidden="true">
+        <span style="--x:8%;--d:0s;--s:18s">🔬</span>
+        <span style="--x:20%;--d:-3s;--s:22s">🧪</span>
+        <span style="--x:34%;--d:-7s;--s:20s">🪐</span>
+        <span style="--x:52%;--d:-2s;--s:24s">⚛️</span>
+        <span style="--x:68%;--d:-9s;--s:19s">📐</span>
+        <span style="--x:82%;--d:-5s;--s:23s">🧬</span>
+        <span style="--x:92%;--d:-11s;--s:21s">💡</span>
+      </div>
+      <div class="hero__inner">
+        <p class="hero__eyebrow">Interactive Digital Learning Design Inspiration Library</p>
+        <h1 class="hero__title">數位教材設計靈感大全</h1>
+        <p class="hero__subtitle">
+          探索 JavaScript、CSS、Three.js、GSAP、SVG 與 Canvas，<br />
+          將程式特效轉化為真正有意義的互動教材。
+        </p>
+        <div class="hero__actions">
+          <a href="#library" class="btn btn--primary">開始探索案例</a>
+          <a href="#favorites" class="btn btn--ghost">查看我的收藏</a>
+        </div>
+
+        <!-- 統計資料（數字遞增動畫） -->
+        <ul class="stats" id="stats" aria-label="網站統計資料">
+          <li class="stat"><span class="stat__num" data-stat="js">0</span><span class="stat__label">JavaScript 特效</span></li>
+          <li class="stat"><span class="stat__num" data-stat="css">0</span><span class="stat__label">CSS 動畫</span></li>
+          <li class="stat"><span class="stat__num" data-stat="science">0</span><span class="stat__label">自然科網站案例</span></li>
+          <li class="stat"><span class="stat__num" data-stat="components">0</span><span class="stat__label">可複製元件</span></li>
+          <li class="stat"><span class="stat__num" data-stat="tech">0</span><span class="stat__label">技術分類</span></li>
+          <li class="stat"><span class="stat__num" data-stat="subjects">0</span><span class="stat__label">教學領域</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===================== 首頁快捷入口 ===================== -->
+    <section class="quick-links" aria-label="首頁推薦分類快捷入口">
+      <div class="section__inner">
+        <h2 class="section__title">快速探索</h2>
+        <div class="quick-links__grid" id="quick-links">
+          <!-- 由 app.js 動態產生快捷按鈕 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 搜尋 + 資料庫區 ===================== -->
+    <section class="library" id="library">
+      <div class="section__inner">
+        <h2 class="section__title">案例資料庫</h2>
+
+        <!-- 全站搜尋列 -->
+        <div class="search" role="search">
+          <label for="search-input" class="visually-hidden">搜尋案例</label>
+          <span class="search__icon" aria-hidden="true">🔍</span>
+          <input
+            type="search"
+            id="search-input"
+            class="search__input"
+            placeholder="搜尋案例名稱、技術、教學科目、標籤…"
+            autocomplete="off"
+          />
+          <button id="search-clear" class="search__clear" aria-label="清除搜尋" hidden>✕</button>
+        </div>
+        <p class="search__count" id="result-count" aria-live="polite"></p>
+
+        <!-- 篩選列（下拉式功能表） -->
+        <div class="filterbar" aria-label="篩選條件">
+          <span class="filterbar__label">篩選：</span>
+          <div id="filter-groups" class="filterbar__groups">
+            <!-- 由 filters.js 動態產生下拉篩選 -->
+          </div>
+          <button id="filter-clear" class="btn btn--ghost btn--sm">清除全部</button>
+        </div>
+
+        <!-- 啟用中的篩選標籤 -->
+        <div class="active-filters" id="active-filters" aria-label="目前啟用的篩選條件"></div>
+
+        <!-- 工具列：排序 + 檢視模式 -->
+        <div class="toolbar">
+          <div class="toolbar__group">
+            <label for="sort-select" class="toolbar__label">排序：</label>
+            <select id="sort-select" class="select">
+              <option value="featured">依推薦程度</option>
+              <option value="name">依名稱</option>
+              <option value="difficulty">依難度</option>
+              <option value="updated">依更新日期</option>
+              <option value="favorite">依收藏狀態</option>
+            </select>
+          </div>
+          <div class="toolbar__group" role="group" aria-label="檢視模式">
+            <button id="view-grid" class="icon-btn view-btn is-active" aria-label="網格檢視" aria-pressed="true">▦</button>
+            <button id="view-list" class="icon-btn view-btn" aria-label="清單檢視" aria-pressed="false">☰</button>
+          </div>
+        </div>
+
+        <!-- 案例卡片容器 -->
+        <div id="cards" class="cards cards--grid" aria-live="polite"></div>
+
+        <!-- 空狀態 -->
+        <div id="empty-state" class="empty-state" hidden>
+          <p class="empty-state__emoji" aria-hidden="true">🔭</p>
+          <p class="empty-state__title">找不到符合條件的案例</p>
+          <p class="empty-state__hint">試著調整搜尋關鍵字，或清除部分篩選條件。</p>
+          <button class="btn btn--ghost btn--sm" id="empty-clear">清除搜尋與篩選</button>
+        </div>
+
+        <!-- 載入更多 -->
+        <div class="load-more-wrap">
+          <button id="load-more" class="btn btn--primary" hidden>載入更多案例</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 教學分類區 ===================== -->
+    <section class="category-block" id="subjects">
+      <div class="section__inner">
+        <h2 class="section__title">依教學領域瀏覽</h2>
+        <p class="section__lead">點選領域，快速篩選相關案例。</p>
+        <div class="chips" id="subject-chips"></div>
+      </div>
+    </section>
+
+    <!-- ===================== 技術分類區 ===================== -->
+    <section class="category-block" id="technologies">
+      <div class="section__inner">
+        <h2 class="section__title">依技術分類瀏覽</h2>
+        <p class="section__lead">點選技術，快速篩選使用該技術的案例。</p>
+        <div class="chips" id="tech-chips"></div>
+      </div>
+    </section>
+
+    <!-- ===================== 收藏區 ===================== -->
+    <section class="category-block" id="favorites">
+      <div class="section__inner">
+        <div class="favorites__header">
+          <h2 class="section__title">我的收藏 <span class="badge" id="fav-count">0</span></h2>
+          <div class="favorites__actions">
+            <button id="fav-export" class="btn btn--ghost btn--sm">匯出收藏（JSON）</button>
+            <button id="fav-clear" class="btn btn--ghost btn--sm">清除全部收藏</button>
+          </div>
+        </div>
+        <div id="fav-cards" class="cards cards--grid"></div>
+        <div id="fav-empty" class="empty-state">
+          <p class="empty-state__emoji" aria-hidden="true">⭐</p>
+          <p class="empty-state__title">尚未收藏任何案例</p>
+          <p class="empty-state__hint">在案例卡片上點選星號即可加入收藏，收藏會保存在瀏覽器中。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 使用指南區 ===================== -->
+    <section class="category-block" id="guide">
+      <div class="section__inner">
+        <h2 class="section__title">如何使用本站</h2>
+        <div class="guide__grid" id="guide-grid">
+          <!-- 由 app.js 動態產生 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 關於本站區 ===================== -->
+    <section class="category-block" id="about">
+      <div class="section__inner">
+        <h2 class="section__title">關於本站</h2>
+        <div class="about__content">
+          <p>《數位教材設計靈感大全》是一套提供教師、教材設計者、教育科技工作者與學生使用的數位教材設計案例資料庫。我們相信程式特效不只是視覺展示，更能轉化為真正有意義的互動教材。</p>
+          <p>本站收錄 JavaScript 特效、CSS 動畫、自然科互動網站案例，以及 Three.js、GSAP、SVG、Canvas 等教材效果案例，並針對每個案例提供教學應用、技術分析與修改建議。</p>
+          <p>網站以純 HTML、CSS 與原生 JavaScript 開發，不需後端伺服器、不需登入、不連接資料庫，所有資料儲存於本地端，可直接部署到 GitHub Pages，也可在本機直接開啟 <code>index.html</code> 使用。</p>
+
+          <div class="about__tools">
+            <h3>匯出資料集</h3>
+            <p>您可以下載本站完整案例資料庫，作為自訂教材平台的資料來源或離線備份。</p>
+            <div class="about__tools-btns">
+              <button id="export-json" class="btn btn--ghost btn--sm">匯出全部案例（JSON）</button>
+              <button id="export-csv" class="btn btn--ghost btn--sm">匯出摘要（CSV）</button>
+              <button id="show-shortcuts" class="btn btn--ghost btn--sm">鍵盤快捷鍵（按 ?）</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== 案例詳情 Modal ===================== -->
+  <div class="modal" id="detail-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__dialog" role="document">
+      <button class="modal__close icon-btn" id="modal-close" aria-label="關閉視窗（Esc）">✕</button>
+      <div class="modal__body" id="modal-body">
+        <!-- 由 app.js 動態產生 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== 頁尾 ===================== -->
+  <footer class="footer">
+    <div class="section__inner footer__inner">
+      <div class="footer__col">
+        <h3 class="footer__title">數位教材設計靈感大全</h3>
+        <p>將程式特效轉化為有意義的互動教材，供教師、教材設計者與學生自由取用、修改與再創作。</p>
+      </div>
+      <div class="footer__col">
+        <h4>技術說明</h4>
+        <p>以 HTML5、CSS3 與原生 JavaScript 開發；程式碼醒目顯示採用 Prism.js。所有案例資料以 JavaScript 陣列與 JSON 儲存，收藏與偏好設定儲存於 localStorage。</p>
+      </div>
+      <div class="footer__col">
+        <h4>部署與說明</h4>
+        <ul class="footer__links">
+          <li><a href="README.md">GitHub Pages 部署說明</a></li>
+          <li><a href="#guide">使用指南</a></li>
+          <li><a href="#about">資料來源與授權說明</a></li>
+        </ul>
+        <p class="footer__meta">隱私說明：本站不蒐集個人資料，收藏與設定僅儲存在您的瀏覽器。<br/>無障礙：支援鍵盤操作、語意標籤與 <code>prefers-reduced-motion</code>。</p>
+      </div>
+      <div class="footer__col footer__disclaimer">
+        <p>本網站提供的程式碼以教學與研究用途為主。引用第三方網站時，僅提供連結、功能分析與教學應用建議；所有商標、網站內容與原始設計均屬其原權利人所有。</p>
+        <p class="footer__updated">最後更新：<span id="footer-updated">2026-07-22</span></p>
+      </div>
+    </div>
+    <button id="back-to-top" class="back-to-top" aria-label="回到頂部" hidden>↑ 回到頂部</button>
+  </footer>
+
+  <!-- 鍵盤快捷鍵說明視窗 -->
+  <div class="modal" id="shortcuts-modal" role="dialog" aria-modal="true" aria-labelledby="sc-title" hidden>
+    <div class="modal__backdrop" data-close-shortcuts></div>
+    <div class="modal__dialog modal__dialog--sm" role="document">
+      <button class="modal__close icon-btn" id="shortcuts-close" aria-label="關閉（Esc）">✕</button>
+      <div class="modal__body">
+        <h2 id="sc-title" class="section__title">鍵盤快捷鍵</h2>
+        <ul class="shortcuts">
+          <li><kbd>/</kbd><span>聚焦搜尋列</span></li>
+          <li><kbd>t</kbd><span>切換深色／淺色模式</span></li>
+          <li><kbd>f</kbd><span>開關篩選面板</span></li>
+          <li><kbd>g</kbd><span>網格檢視</span></li>
+          <li><kbd>l</kbd><span>清單檢視</span></li>
+          <li><kbd>m</kbd><span>載入更多案例</span></li>
+          <li><kbd>?</kbd><span>顯示／關閉本說明</span></li>
+          <li><kbd>Esc</kbd><span>關閉視窗或清除搜尋</span></li>
+        </ul>
+        <p class="shortcuts__note">在輸入框中打字時，快捷鍵不會觸發。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 全域提示（複製成功 / localStorage 錯誤等） -->
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <!-- ===================== 指令碼 ===================== -->
+  <!-- 資料庫（主要資料放在 data.js，確保 file:// 可用） -->
+  <!-- 第二階段擴充案例需在 data.js 之前載入，供其併入 window.DATA -->
+  <script src="js/data-phase2.js"></script>
+  <script src="js/data-phase2b.js"></script>
+  <script src="js/data-phase2c.js"></script>
+  <script src="js/data-phase3a.js"></script>
+  <script src="js/data-phase3b.js"></script>
+  <script src="js/data-phase3c.js"></script>
+  <script src="js/data-phase3d.js"></script>
+  <script src="js/data-phase4a.js"></script>
+  <script src="js/data-phase4b.js"></script>
+  <script src="js/data-phase4c.js"></script>
+  <script src="js/data-phase4d.js"></script>
+  <script src="js/data-phase4e.js"></script>
+  <script src="js/data.js"></script>
+  <!-- 具真實截圖縮圖的案例 id 清單 -->
+  <script src="js/thumbnails.js"></script>
+  <!-- 功能模組 -->
+  <script src="js/theme.js"></script>
+  <script src="js/favorites.js"></script>
+  <script src="js/filters.js"></script>
+  <script src="js/code-runner.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- Prism.js（程式碼語法醒目顯示），含載入失敗處理 -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"
+    onerror="window.__prismFailed = true;"
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"
+    onerror="window.__prismFailed = true;"
+  ></script>
+</body>
+</html>
