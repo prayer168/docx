@@ -101,6 +101,31 @@ npx serve
 
 > **子路徑相容**：所有資源皆使用**相對路徑**（例如 `css/style.css`、`assets/thumbnails/xxx.png`），不使用 `/assets/...` 這類會在專案子路徑失效的絕對路徑，因此在 GitHub Pages 子路徑下也能正常載入。
 
+### 方式二：以 `gh-pages` 分支部署（本網站位於既有 repo 的子資料夾時）
+
+若本專案是放在既有 repo 的子資料夾（例如 `digital-learning-inspiration/`），可用 `git subtree split` 把該子資料夾抽出成一個「根目錄即網站」的 `gh-pages` 分支，再由 GitHub Pages 從該分支發布。此分支完全獨立，**不影響 `main`**。
+
+首次部署：
+
+```bash
+# 於 repo 根目錄、且目前分支含有該子資料夾時執行
+git subtree split --prefix=digital-learning-inspiration -b gh-pages
+git push -u origin gh-pages
+```
+
+接著到 **Settings → Pages** → Source 選 `Deploy from a branch` → Branch 選 `gh-pages` + `/ (root)` → Save。稍候即可於 `https://<帳號>.github.io/<儲存庫>/` 瀏覽（例如 `https://prayer168.github.io/docx/`）。
+
+日後更新（改完子資料夾內容並提交後，重新抽出並強制更新 `gh-pages`）：
+
+```bash
+git checkout <你更新後的分支>
+git branch -D gh-pages
+git subtree split --prefix=digital-learning-inspiration -b gh-pages
+git push -f origin gh-pages
+```
+
+> 若專案本身就是 repo 根目錄（`index.html` 在最外層），則不需 `gh-pages` 技巧，直接依方式一從 `main` 的 `/ (root)` 發布即可；也可使用 `scripts/deploy-to-github.sh` 推送到一個全新的獨立 repo。
+
 ---
 
 ## 五、如何新增案例
