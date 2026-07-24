@@ -79,7 +79,39 @@
 }
 .active-filter button { background: none; border: none; color: inherit; font-size: 0.9rem; padding: 0 2px; line-height: 1; }
 
-/* ---------- 篩選面板 ---------- */
+/* ---------- 下拉式篩選列 ---------- */
+.filterbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 14px; }
+.filterbar__label { color: var(--text-muted); font-size: 0.9rem; flex-shrink: 0; }
+.filterbar__groups { display: flex; flex-wrap: wrap; gap: 8px; }
+.fdrop { position: relative; }
+.fdrop__btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  border-radius: 999px; padding: 8px 14px; min-height: 40px; font-size: 0.88rem; transition: var(--transition);
+}
+.fdrop__btn:hover { border-color: var(--c-primary-2); }
+.fdrop.has-selected .fdrop__btn { border-color: var(--c-primary-2); color: var(--c-primary-2); }
+.fdrop__badge {
+  background: var(--c-primary); color: #fff; border-radius: 999px; min-width: 18px; height: 18px;
+  font-size: 0.72rem; display: inline-flex; align-items: center; justify-content: center; padding: 0 5px;
+}
+.fdrop__caret { color: var(--text-muted); font-size: 0.75rem; transition: transform var(--transition); }
+.fdrop.is-open .fdrop__caret { transform: rotate(180deg); }
+.fdrop__menu {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: 60;
+  min-width: 230px; max-width: min(300px, calc(100vw - 32px)); max-height: 320px; overflow-y: auto;
+  background: var(--surface-solid); border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: var(--shadow); padding: 8px; backdrop-filter: blur(var(--glass-blur));
+}
+.fdrop__menu .filter-option {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px;
+  font-size: 0.88rem; cursor: pointer;
+}
+.fdrop__menu .filter-option:hover { background: var(--surface); }
+.fdrop__menu .filter-option input { width: 16px; height: 16px; accent-color: var(--c-primary); flex-shrink: 0; }
+.fdrop__menu .filter-option__count { margin-left: auto; color: var(--text-muted); font-size: 0.76rem; }
+
+/* ---------- 篩選面板（舊側欄樣式，保留供相容） ---------- */
 .filters {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
   padding: 18px; backdrop-filter: blur(var(--glass-blur)); position: sticky; top: 76px;
@@ -104,8 +136,10 @@
 .filters__footer { margin-top: 14px; }
 
 /* ---------- 案例卡片 ---------- */
-.cards { display: grid; gap: var(--gap); }
-.cards--grid { grid-template-columns: repeat(3, 1fr); }
+.cards { display: grid; gap: var(--gap); min-width: 0; }
+/* 桌面預設 3 欄；欄數改由明確斷點控制（見 responsive.css），
+   不使用 auto-fill/auto-fit，避免在彈性版面軌道中塌陷成單欄。 */
+.cards--grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .cards--list { grid-template-columns: 1fr; }
 
 .card {

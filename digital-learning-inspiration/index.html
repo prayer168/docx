@@ -137,63 +137,50 @@
         </div>
         <p class="search__count" id="result-count" aria-live="polite"></p>
 
-        <div class="library__layout">
-          <!-- 篩選面板（桌面側欄／手機抽屜） -->
-          <button id="filter-toggle" class="btn btn--ghost filter-toggle" aria-expanded="false" aria-controls="filter-panel">
-            篩選條件 ⚙️
-          </button>
-          <aside class="filters" id="filter-panel" aria-label="篩選面板">
-            <div class="filters__header">
-              <h3>篩選條件</h3>
-              <button id="filter-close" class="icon-btn filters__close" aria-label="關閉篩選面板">✕</button>
-            </div>
-            <div id="filter-groups" class="filters__groups">
-              <!-- 由 filters.js 動態產生 -->
-            </div>
-            <div class="filters__footer">
-              <button id="filter-clear" class="btn btn--ghost btn--sm">清除全部</button>
-            </div>
-          </aside>
-
-          <!-- 案例主區 -->
-          <div class="library__main">
-            <!-- 啟用中的篩選標籤 -->
-            <div class="active-filters" id="active-filters" aria-label="目前啟用的篩選條件"></div>
-
-            <!-- 工具列：排序 + 檢視模式 -->
-            <div class="toolbar">
-              <div class="toolbar__group">
-                <label for="sort-select" class="toolbar__label">排序：</label>
-                <select id="sort-select" class="select">
-                  <option value="featured">依推薦程度</option>
-                  <option value="name">依名稱</option>
-                  <option value="difficulty">依難度</option>
-                  <option value="updated">依更新日期</option>
-                  <option value="favorite">依收藏狀態</option>
-                </select>
-              </div>
-              <div class="toolbar__group" role="group" aria-label="檢視模式">
-                <button id="view-grid" class="icon-btn view-btn is-active" aria-label="網格檢視" aria-pressed="true">▦</button>
-                <button id="view-list" class="icon-btn view-btn" aria-label="清單檢視" aria-pressed="false">☰</button>
-              </div>
-            </div>
-
-            <!-- 案例卡片容器 -->
-            <div id="cards" class="cards cards--grid" aria-live="polite"></div>
-
-            <!-- 空狀態 -->
-            <div id="empty-state" class="empty-state" hidden>
-              <p class="empty-state__emoji" aria-hidden="true">🔭</p>
-              <p class="empty-state__title">找不到符合條件的案例</p>
-              <p class="empty-state__hint">試著調整搜尋關鍵字，或清除部分篩選條件。</p>
-              <button class="btn btn--ghost btn--sm" id="empty-clear">清除搜尋與篩選</button>
-            </div>
-
-            <!-- 載入更多 -->
-            <div class="load-more-wrap">
-              <button id="load-more" class="btn btn--primary" hidden>載入更多案例</button>
-            </div>
+        <!-- 篩選列（下拉式功能表） -->
+        <div class="filterbar" aria-label="篩選條件">
+          <span class="filterbar__label">篩選：</span>
+          <div id="filter-groups" class="filterbar__groups">
+            <!-- 由 filters.js 動態產生下拉篩選 -->
           </div>
+          <button id="filter-clear" class="btn btn--ghost btn--sm">清除全部</button>
+        </div>
+
+        <!-- 啟用中的篩選標籤 -->
+        <div class="active-filters" id="active-filters" aria-label="目前啟用的篩選條件"></div>
+
+        <!-- 工具列：排序 + 檢視模式 -->
+        <div class="toolbar">
+          <div class="toolbar__group">
+            <label for="sort-select" class="toolbar__label">排序：</label>
+            <select id="sort-select" class="select">
+              <option value="featured">依推薦程度</option>
+              <option value="name">依名稱</option>
+              <option value="difficulty">依難度</option>
+              <option value="updated">依更新日期</option>
+              <option value="favorite">依收藏狀態</option>
+            </select>
+          </div>
+          <div class="toolbar__group" role="group" aria-label="檢視模式">
+            <button id="view-grid" class="icon-btn view-btn is-active" aria-label="網格檢視" aria-pressed="true">▦</button>
+            <button id="view-list" class="icon-btn view-btn" aria-label="清單檢視" aria-pressed="false">☰</button>
+          </div>
+        </div>
+
+        <!-- 案例卡片容器 -->
+        <div id="cards" class="cards cards--grid" aria-live="polite"></div>
+
+        <!-- 空狀態 -->
+        <div id="empty-state" class="empty-state" hidden>
+          <p class="empty-state__emoji" aria-hidden="true">🔭</p>
+          <p class="empty-state__title">找不到符合條件的案例</p>
+          <p class="empty-state__hint">試著調整搜尋關鍵字，或清除部分篩選條件。</p>
+          <button class="btn btn--ghost btn--sm" id="empty-clear">清除搜尋與篩選</button>
+        </div>
+
+        <!-- 載入更多 -->
+        <div class="load-more-wrap">
+          <button id="load-more" class="btn btn--primary" hidden>載入更多案例</button>
         </div>
       </div>
     </section>

@@ -3,27 +3,18 @@
    斷點：1440 / 1024 / 768 / 375 / 320
    ============================================================ */
 
-/* ---------- 大桌面（≤1440px 微調容器） ---------- */
-@media (max-width: 1200px) {
-  .cards--grid { grid-template-columns: repeat(3, 1fr); }
-}
+/* 卡片欄數：桌面 3 欄（見 components.css），以下依斷點收合為 2 欄、1 欄。
+   篩選改為下拉式功能表（.filterbar / .fdrop），不再使用側欄或抽屜。 */
 
 /* ---------- 筆電 / 小桌面 ---------- */
 @media (max-width: 1024px) {
   .stats { grid-template-columns: repeat(3, 1fr); }
-  .library__layout { grid-template-columns: 1fr; }
-  .cards--grid { grid-template-columns: repeat(2, 1fr); }
   .footer__inner { grid-template-columns: repeat(2, 1fr); }
+}
 
-  /* 篩選改為抽屜（手機/平板共用） */
-  .filter-toggle { display: inline-flex; margin-bottom: 14px; }
-  .filters {
-    position: fixed; top: 0; left: 0; bottom: 0; width: min(320px, 88vw);
-    z-index: 1400; border-radius: 0; transform: translateX(-100%);
-    transition: transform var(--transition); max-height: 100vh; box-shadow: var(--shadow);
-  }
-  .filters.is-open { transform: translateX(0); }
-  .filters__close { display: inline-flex; }
+/* ---------- 中型（平板橫向 / 小筆電）：卡片 2 欄 ---------- */
+@media (max-width: 900px) {
+  .cards--grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* ---------- 平板 ---------- */
@@ -40,7 +31,6 @@
   .navbar__link { padding: 12px; border-radius: 8px; }
   .navbar__title-en { display: none; }
 
-  .cards--grid { grid-template-columns: repeat(2, 1fr); }
   .stats { grid-template-columns: repeat(3, 1fr); }
 
   /* Modal 接近全螢幕 */
@@ -58,6 +48,8 @@
 @media (max-width: 560px) {
   .cards--grid { grid-template-columns: 1fr; }
   .stats { grid-template-columns: repeat(2, 1fr); }
+  .filterbar { gap: 6px; }
+  .filterbar__label { width: 100%; }
   .footer__inner { grid-template-columns: 1fr; }
   .hero__actions { flex-direction: column; }
   .hero__actions .btn { width: 100%; }

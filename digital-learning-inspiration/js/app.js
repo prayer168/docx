@@ -739,16 +739,7 @@
       shownCount += PAGE_SIZE; render();
     });
 
-    // 篩選抽屜開關（手機／平板）
-    $("#filter-toggle").addEventListener("click", function () {
-      var panel = $("#filter-panel");
-      var open = panel.classList.toggle("is-open");
-      this.setAttribute("aria-expanded", open ? "true" : "false");
-    });
-    $("#filter-close").addEventListener("click", function () {
-      $("#filter-panel").classList.remove("is-open");
-      $("#filter-toggle").setAttribute("aria-expanded", "false");
-    });
+    // 清除全部篩選
     $("#filter-clear").addEventListener("click", function () {
       Filters.clearAll(); searchTerm = ""; setSearchInput(""); shownCount = PAGE_SIZE; refresh();
     });
@@ -924,7 +915,7 @@
     switch (e.key) {
       case "/": e.preventDefault(); var s = $("#search-input"); if (s) { s.focus(); s.select(); } break;
       case "t": document.getElementById("theme-toggle").click(); break;
-      case "f": $("#filter-toggle").click(); break;
+      case "f": e.preventDefault(); if (window.Filters && Filters.openFirst) Filters.openFirst(); break;
       case "g": setView("grid"); break;
       case "l": setView("list"); break;
       case "m": var lm = $("#load-more"); if (lm && !lm.hidden) lm.click(); break;

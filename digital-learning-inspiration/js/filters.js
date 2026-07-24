@@ -52,88 +52,131 @@
     return keys.map(function (k) { return { value: k, count: map[k] }; });
   }
 
-  /** 建立篩選面板 UI */
+  var _onChange = null;      // 供選項變動時通知外部重繪
+  var _globalBound = false;  // 是否已綁定全域關閉事件
+
+  /** 建立單個選項列（checkbox + 文字 + 可選數量） */
+  function optionRow(key, kind, value, text, count) {
+    var label = document.createElement("label");
+    label.className = "filter-option";
+    var cb = document.createElement("input");
+    cb.type = "checkbox";
+    if (kind === "facet") { cb.dataset.facet = key; cb.value = value; }
+    else { cb.dataset.flag = key; }
+    cb.addEventListener("change", function () {
+      if (kind === "facet") {
+        if (cb.checked) { selected[key].add(value); } else { selected[key].delete(value); }
+      } else {
+        if (cb.checked) { flags[key] = true; } else { delete flags[key]; }
+      }
+      updateAllBadges();
+      if (_onChange) _onChange();
+    });
+    var t = document.createElement("span");
+    t.textContent = text;
+    label.appendChild(cb);
+    label.appendChild(t);
+    if (count != null) {
+      var c = document.createElement("span");
+      c.className = "filter-option__count";
+      c.textContent = count;
+      label.appendChild(c);
+    }
+    return label;
+  }
+
+  /** 建立一個下拉篩選（按鈕 + 彈出選單） */
+  function makeDropdown(key, label, optionEls) {
+    var drop = document.createElement("div");
+    drop.className = "fdrop";
+    drop.dataset.key = key;
+
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "fdrop__btn";
+    btn.setAttribute("aria-expanded", "false");
+    btn.setAttribute("aria-haspopup", "true");
+    btn.innerHTML = '<span class="fdrop__label">' + label + '</span>' +
+      '<span class="fdrop__badge" hidden>0</span><span class="fdrop__caret" aria-hidden="true">▾</span>';
+
+    var menu = document.createElement("div");
+    menu.className = "fdrop__menu";
+    menu.setAttribute("role", "group");
+    menu.setAttribute("aria-label", label);
+    menu.hidden = true;
+    optionEls.forEach(function (el) { menu.appendChild(el); });
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var willOpen = menu.hidden;
+      closeAll();
+      if (willOpen) { menu.hidden = false; btn.setAttribute("aria-expanded", "true"); drop.classList.add("is-open"); }
+    });
+    menu.addEventListener("click", function (e) { e.stopPropagation(); });
+
+    drop.appendChild(btn);
+    drop.appendChild(menu);
+    return drop;
+  }
+
+  function closeAll() {
+    var container = document.getElementById("filter-groups");
+    if (!container) return;
+    container.querySelectorAll(".fdrop").forEach(function (d) {
+      var m = d.querySelector(".fdrop__menu"), b = d.querySelector(".fdrop__btn");
+      if (m) m.hidden = true;
+      if (b) b.setAttribute("aria-expanded", "false");
+      d.classList.remove("is-open");
+    });
+  }
+
+  /** 更新每個下拉按鈕上的已選數量徽章 */
+  function updateAllBadges() {
+    var container = document.getElementById("filter-groups");
+    if (!container) return;
+    container.querySelectorAll(".fdrop").forEach(function (d) {
+      var n = d.querySelectorAll(".fdrop__menu input:checked").length;
+      var badge = d.querySelector(".fdrop__badge");
+      if (badge) { badge.textContent = n; badge.hidden = n === 0; }
+      d.classList.toggle("has-selected", n > 0);
+    });
+  }
+
+  /** 建立下拉式篩選列 UI */
   function build(examples, onChange) {
     var container = document.getElementById("filter-groups");
     if (!container) return;
+    _onChange = onChange;
     container.innerHTML = "";
 
-    // 多選面向
     FACETS.forEach(function (facet) {
       var values = collectValues(examples, facet);
       if (!values.length) return;
-      var group = document.createElement("div");
-      group.className = "filter-group";
-      var title = document.createElement("h4");
-      title.className = "filter-group__title";
-      title.textContent = facet.label;
-      title.setAttribute("role", "button");
-      title.setAttribute("tabindex", "0");
-      title.addEventListener("click", function () { group.classList.toggle("is-collapsed"); });
-      title.addEventListener("keydown", function (e) {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); group.classList.toggle("is-collapsed"); }
-      });
-      var options = document.createElement("div");
-      options.className = "filter-group__options";
-
-      values.forEach(function (v) {
-        var label = document.createElement("label");
-        label.className = "filter-option";
-        var cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.value = v.value;
-        cb.dataset.facet = facet.key;
-        cb.addEventListener("change", function () {
-          if (cb.checked) { selected[facet.key].add(v.value); }
-          else { selected[facet.key].delete(v.value); }
-          onChange();
-        });
-        var text = document.createElement("span");
-        text.textContent = v.value;
-        var cnt = document.createElement("span");
-        cnt.className = "filter-option__count";
-        cnt.textContent = v.count;
-        label.appendChild(cb);
-        label.appendChild(text);
-        label.appendChild(cnt);
-        options.appendChild(label);
-      });
-
-      group.appendChild(title);
-      group.appendChild(options);
-      container.appendChild(group);
+      var opts = values.map(function (v) { return optionRow(facet.key, "facet", v.value, v.value, v.count); });
+      container.appendChild(makeDropdown(facet.key, facet.label, opts));
     });
 
-    // 布林面向
-    var flagGroup = document.createElement("div");
-    flagGroup.className = "filter-group";
-    var flagTitle = document.createElement("h4");
-    flagTitle.className = "filter-group__title";
-    flagTitle.textContent = "特性";
-    flagTitle.setAttribute("role", "button");
-    flagTitle.setAttribute("tabindex", "0");
-    flagTitle.addEventListener("click", function () { flagGroup.classList.toggle("is-collapsed"); });
-    var flagOptions = document.createElement("div");
-    flagOptions.className = "filter-group__options";
-    FLAGS.forEach(function (flag) {
-      var label = document.createElement("label");
-      label.className = "filter-option";
-      var cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.dataset.flag = flag.key;
-      cb.addEventListener("change", function () {
-        if (cb.checked) { flags[flag.key] = true; } else { delete flags[flag.key]; }
-        onChange();
+    // 特性（布林面向）
+    var flagOpts = FLAGS.map(function (flag) { return optionRow(flag.key, "flag", null, flag.label, null); });
+    container.appendChild(makeDropdown("__flags", "特性", flagOpts));
+
+    // 全域：點擊外部或按 Esc 關閉開啟中的下拉（只綁定一次）
+    if (!_globalBound) {
+      document.addEventListener("click", function (e) {
+        if (!e.target.closest(".fdrop")) closeAll();
       });
-      var text = document.createElement("span");
-      text.textContent = flag.label;
-      label.appendChild(cb);
-      label.appendChild(text);
-      flagOptions.appendChild(label);
-    });
-    flagGroup.appendChild(flagTitle);
-    flagGroup.appendChild(flagOptions);
-    container.appendChild(flagGroup);
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") closeAll();
+      });
+      _globalBound = true;
+    }
+    updateAllBadges();
+  }
+
+  /** 開啟第一個下拉（供鍵盤快捷鍵使用） */
+  function openFirst() {
+    var btn = document.querySelector("#filter-groups .fdrop__btn");
+    if (btn) btn.click();
   }
 
   /** 比對單一案例是否符合目前所有篩選 */
@@ -213,10 +256,12 @@
     container.querySelectorAll("input[data-flag]").forEach(function (cb) {
       cb.checked = !!flags[cb.dataset.flag];
     });
+    updateAllBadges();
   }
   function syncFlagCheckbox(key, val) {
     var cb = document.querySelector('input[data-flag="' + key + '"]');
     if (cb) cb.checked = !!val;
+    updateAllBadges();
   }
 
   window.Filters = {
@@ -229,6 +274,7 @@
     setFlag: setFlag,
     setFavoriteOnly: setFavoriteOnly,
     isFavoriteOnly: isFavoriteOnly,
-    syncCheckboxes: syncCheckboxes
+    syncCheckboxes: syncCheckboxes,
+    openFirst: openFirst
   };
 })();
